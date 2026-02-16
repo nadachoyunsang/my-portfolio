@@ -9,7 +9,7 @@ CREATE TABLE posts (
   content text,
   excerpt text,
   thumbnail_url text,
-  category text NOT NULL CHECK (category IN ('documentary', 'book', 'article')),
+  category text NOT NULL,
   tags text[] DEFAULT '{}',
   published boolean DEFAULT false,
   created_at timestamptz DEFAULT now(),

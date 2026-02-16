@@ -1,39 +1,47 @@
 'use client';
 
-import type { Category } from '@/types/database';
-
-const TABS: { label: string; value: Category | null }[] = [
-  { label: '전체', value: null },
-  { label: '다큐멘터리', value: 'documentary' },
-  { label: '책', value: 'book' },
-  { label: '기사', value: 'article' },
-];
-
 interface CategoryTabsProps {
-  active: Category | null;
-  onChange: (category: Category | null) => void;
+  categories: { slug: string; name: string }[];
+  active: string | null;
+  onChange: (category: string | null) => void;
 }
 
-export default function CategoryTabs({ active, onChange }: CategoryTabsProps) {
+export default function CategoryTabs({
+  categories,
+  active,
+  onChange,
+}: CategoryTabsProps) {
   return (
     <div
       role="tablist"
       aria-label="카테고리 필터"
       className="flex flex-wrap gap-2"
     >
-      {TABS.map(({ label, value }) => (
+      <button
+        role="tab"
+        aria-selected={active === null}
+        onClick={() => onChange(null)}
+        className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+          active === null
+            ? 'bg-accent text-white'
+            : 'text-muted hover:text-foreground hover:bg-foreground/5'
+        }`}
+      >
+        전체
+      </button>
+      {categories.map(({ slug, name }) => (
         <button
-          key={label}
+          key={slug}
           role="tab"
-          aria-selected={active === value}
-          onClick={() => onChange(value)}
+          aria-selected={active === slug}
+          onClick={() => onChange(slug)}
           className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-            active === value
+            active === slug
               ? 'bg-accent text-white'
               : 'text-muted hover:text-foreground hover:bg-foreground/5'
           }`}
         >
-          {label}
+          {name}
         </button>
       ))}
     </div>

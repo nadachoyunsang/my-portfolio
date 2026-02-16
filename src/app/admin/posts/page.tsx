@@ -1,24 +1,27 @@
 import Link from 'next/link';
 
+import { getCategories } from '@/lib/categories';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
 
 type Post = Database['public']['Tables']['posts']['Row'];
 
-const CATEGORY_LABEL: Record<string, string> = {
-  documentary: '다큐멘터리',
-  book: '책',
-  article: '기사',
-};
-
 export default async function AdminPostsPage() {
-  const supabase = await createClient();
+  const [supabase, categories] = await Promise.all([
+    createClient(),
+    getCategories(),
+  ]);
+
   const { data } = await supabase
     .from('posts')
     .select()
     .order('created_at', { ascending: false });
 
   const posts = data as Post[] | null;
+
+  const categoryLabel = Object.fromEntries(
+    categories.map((c) => [c.slug, c.name]),
+  );
 
   return (
     <div>
@@ -43,7 +46,7 @@ export default async function AdminPostsPage() {
               <div>
                 <span className="font-medium">{post.title}</span>
                 <span className="ml-3 text-xs text-muted">
-                  {CATEGORY_LABEL[post.category] ?? post.category}
+                  {categoryLabel[post.category] ?? post.category}
                 </span>
               </div>
               <div className="flex items-center gap-3">

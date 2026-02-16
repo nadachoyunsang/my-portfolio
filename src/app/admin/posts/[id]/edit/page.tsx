@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 
 import PostForm from '@/components/admin/PostForm';
 import DeletePostButton from '@/components/admin/DeletePostButton';
+import { getCategories } from '@/lib/categories';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
 
@@ -14,7 +15,10 @@ export default async function EditPostPage({
   params: Promise<Params>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
+  const [supabase, categories] = await Promise.all([
+    createClient(),
+    getCategories(),
+  ]);
 
   const { data } = await supabase.from('posts').select().eq('id', id).single();
 
@@ -28,7 +32,7 @@ export default async function EditPostPage({
         <DeletePostButton postId={post.id} postTitle={post.title} />
       </div>
       <div className="mt-6">
-        <PostForm post={post} />
+        <PostForm post={post} categories={categories} />
       </div>
     </div>
   );

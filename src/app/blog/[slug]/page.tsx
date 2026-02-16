@@ -3,13 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { getCategories } from '@/lib/categories';
 import { getPostBySlug } from '@/lib/posts';
-
-const CATEGORY_LABEL: Record<string, string> = {
-  documentary: '다큐멘터리',
-  book: '책',
-  article: '기사',
-};
 
 type Params = { slug: string };
 
@@ -42,11 +37,18 @@ export default async function BlogPostPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const [post, categories] = await Promise.all([
+    getPostBySlug(slug),
+    getCategories(),
+  ]);
 
   if (!post) {
     notFound();
   }
+
+  const categoryLabel = Object.fromEntries(
+    categories.map((c) => [c.slug, c.name]),
+  );
 
   const date = new Date(post.created_at).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -65,7 +67,7 @@ export default async function BlogPostPage({
 
       <header className="mt-8">
         <span className="text-sm text-accent">
-          {CATEGORY_LABEL[post.category] ?? post.category}
+          {categoryLabel[post.category] ?? post.category}
         </span>
         <h1 className="mt-2 text-3xl font-bold sm:text-4xl">{post.title}</h1>
         <p className="mt-3 text-sm text-muted">{date}</p>

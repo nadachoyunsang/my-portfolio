@@ -6,11 +6,34 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type Category = 'documentary' | 'book' | 'article';
+export type Category = string;
 
 export interface Database {
   public: {
     Tables: {
+      categories: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+      };
       posts: {
         Row: {
           id: string;

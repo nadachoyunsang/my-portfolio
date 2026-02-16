@@ -13,11 +13,20 @@ export default function AdminPage() {
           <p className="mt-1 text-sm text-muted">블로그 글 작성, 수정, 삭제</p>
         </Link>
         <Link
+          href="/admin/categories"
+          className="rounded-lg border border-border p-6 transition-colors hover:bg-card"
+        >
+          <h3 className="font-semibold">카테고리 관리</h3>
+          <p className="mt-1 text-sm text-muted">카테고리 추가, 수정, 삭제</p>
+        </Link>
+        <Link
           href="/admin/site"
           className="rounded-lg border border-border p-6 transition-colors hover:bg-card"
         >
           <h3 className="font-semibold">사이트 콘텐츠</h3>
-          <p className="mt-1 text-sm text-muted">자기소개, 연락처 수정</p>
+          <p className="mt-1 text-sm text-muted">
+            사이트 이름, 자기소개, 연락처 수정
+          </p>
         </Link>
       </div>
     </div>

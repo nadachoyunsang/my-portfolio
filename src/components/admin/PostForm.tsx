@@ -22,15 +22,10 @@ interface PostFormProps {
     tags: string[];
     published: boolean;
   };
+  categories: { slug: string; name: string }[];
 }
 
-const CATEGORIES: { label: string; value: Category }[] = [
-  { label: '다큐멘터리', value: 'documentary' },
-  { label: '책', value: 'book' },
-  { label: '기사', value: 'article' },
-];
-
-export default function PostForm({ post }: PostFormProps) {
+export default function PostForm({ post, categories }: PostFormProps) {
   const router = useRouter();
   const isEdit = !!post;
 
@@ -39,7 +34,7 @@ export default function PostForm({ post }: PostFormProps) {
   const [content, setContent] = useState(post?.content ?? '');
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? '');
   const [category, setCategory] = useState<Category>(
-    post?.category ?? 'article',
+    post?.category ?? categories[0]?.slug ?? '',
   );
   const [tagsInput, setTagsInput] = useState(post?.tags.join(', ') ?? '');
   const [thumbnailUrl, setThumbnailUrl] = useState(post?.thumbnail_url ?? '');
@@ -140,9 +135,9 @@ export default function PostForm({ post }: PostFormProps) {
             onChange={(e) => setCategory(e.target.value as Category)}
             className={inputClass}
           >
-            {CATEGORIES.map(({ label, value }) => (
-              <option key={value} value={value}>
-                {label}
+            {categories.map(({ slug, name }) => (
+              <option key={slug} value={slug}>
+                {name}
               </option>
             ))}
           </select>
