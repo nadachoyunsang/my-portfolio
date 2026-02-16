@@ -4,11 +4,15 @@ import { useEffect, useState } from 'react';
 
 const NAV_ITEMS = [
   { label: '소개', href: '#about' },
-  { label: '블로그', href: '#blog' },
+  { label: '포트폴리오', href: '#blog' },
   { label: '연락처', href: '#contact' },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  siteName?: string;
+}
+
+export default function Header({ siteName = 'YJ-CJS' }: HeaderProps) {
   const [activeSection, setActiveSection] = useState('');
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -59,7 +63,7 @@ export default function Header() {
     >
       <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
         <a href="#" className="text-lg font-bold text-foreground">
-          YJ-CJS
+          {siteName}
         </a>
 
         {/* 데스크톱 네비게이션 */}
