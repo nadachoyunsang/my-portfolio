@@ -19,7 +19,7 @@ export default function BlogSection({ posts, categories }: BlogSectionProps) {
     : posts;
 
   return (
-    <section id="blog" className="px-6 py-24">
+    <section id="portfolio" className="px-6 py-24">
       <div className="mx-auto max-w-3xl">
         <h2 className="text-2xl font-bold">Portfolio</h2>
         <div className="mt-6">

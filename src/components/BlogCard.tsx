@@ -10,7 +10,7 @@ interface BlogCardProps {
 export default function BlogCard({ post }: BlogCardProps) {
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={`/portfolio/${post.slug}`}
       className="group flex flex-col gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-card sm:flex-row sm:gap-4"
     >
       {post.thumbnail_url && (

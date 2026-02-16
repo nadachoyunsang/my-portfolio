@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 const NAV_ITEMS = [
   { label: '소개', href: '#about' },
-  { label: '포트폴리오', href: '#blog' },
+  { label: '포트폴리오', href: '#portfolio' },
   { label: '연락처', href: '#contact' },
 ];
 

@@ -13,7 +13,8 @@ export async function generateMetadata({
 }: {
   params: Promise<Params>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
 
   if (!post) {
@@ -36,7 +37,8 @@ export default async function BlogPostPage({
 }: {
   params: Promise<Params>;
 }) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const [post, categories] = await Promise.all([
     getPostBySlug(slug),
     getCategories(),
@@ -59,7 +61,7 @@ export default async function BlogPostPage({
   return (
     <article className="mx-auto max-w-3xl px-6 py-16">
       <Link
-        href="/#blog"
+        href="/#portfolio"
         className="text-sm text-muted hover:text-foreground transition-colors"
       >
         &larr; 목록으로
