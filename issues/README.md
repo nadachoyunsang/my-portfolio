@@ -10,7 +10,7 @@
 | 4 | 홈 페이지 레이아웃 및 공통 UI | feature, ui | done | #1 |
 | 5 | 블로그 목록 및 카테고리 필터 | feature | done | #2, #4 |
 | 6 | 블로그 글 상세 페이지 | feature | done | #5 |
-| 7 | 관리자 - 블로그 글 관리 (CRUD) | feature, admin | open | #3, #5 |
+| 7 | 관리자 - 블로그 글 관리 (CRUD) | feature, admin | done | #3, #5 |
 | 8 | 관리자 - 사이트 콘텐츠 관리 | feature, admin | open | #3, #4 |
 | 9 | 반응형 디자인 및 접근성 | enhancement, a11y | open | #4, #5, #6 |
 | 10 | Vercel 배포 설정 | setup, deploy | open | #1 |
