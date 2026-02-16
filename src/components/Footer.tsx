@@ -1,8 +1,9 @@
 interface FooterProps {
   email: string;
+  siteName?: string;
 }
 
-export default function Footer({ email }: FooterProps) {
+export default function Footer({ email, siteName = 'YJ-CJS' }: FooterProps) {
   return (
     <section id="contact" className="border-t border-border">
       <footer
@@ -18,7 +19,7 @@ export default function Footer({ email }: FooterProps) {
           {email}
         </a>
         <p className="mt-8 text-sm text-muted">
-          &copy; {new Date().getFullYear()} YJ-CJS. All rights reserved.
+          &copy; {new Date().getFullYear()} {siteName}. All rights reserved.
         </p>
       </footer>
     </section>

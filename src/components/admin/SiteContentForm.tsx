@@ -11,6 +11,7 @@ interface SiteContentFormProps {
 }
 
 const FIELDS = [
+  { key: 'site_name', label: '사이트 이름' },
   { key: 'intro_name', label: '이름' },
   { key: 'intro_job', label: '직업' },
   { key: 'intro_bio', label: '소개글', multiline: true },
