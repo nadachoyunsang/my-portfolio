@@ -32,7 +32,7 @@ src/
 ├── types/         # 데이터 형식 정의
 └── constants/     # 고정값 정의
 docs/
-├── HANDOVER.md          # 서비스 관리 가이드
+├── SERVICE_GUIDE.md     # 서비스 관리 가이드
 └── CLAUDE_CODE_GUIDE.md # Claude Code 사용법
 ```
 
@@ -45,6 +45,6 @@ Vercel이 자동으로 처리하므로 별도 관리가 필요 없습니다.
 ## 관련 문서
 
 - **서비스 관리 가이드** - 각 서비스 대시보드 사용법, 환경변수, 문제 해결 등
-  → [docs/HANDOVER.md](docs/HANDOVER.md)
+  → [docs/SERVICE_GUIDE.md](docs/SERVICE_GUIDE.md)
 - **Claude Code 사용법** - 비개발자도 코드를 수정할 수 있는 AI 도구 가이드
   → [docs/CLAUDE_CODE_GUIDE.md](docs/CLAUDE_CODE_GUIDE.md)
