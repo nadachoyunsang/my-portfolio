@@ -5,7 +5,7 @@
 | # | 제목 | 라벨 | 상태 | 의존성 |
 | - | - | - | - | - |
 | 1 | 프로젝트 초기 설정 | setup | done | - |
-| 2 | DB 스키마 설계 및 Supabase 설정 | setup, database | open | #1 |
+| 2 | DB 스키마 설계 및 Supabase 설정 | setup, database | done | #1 |
 | 3 | 인증 시스템 (Google OAuth) | feature, security | open | #2 |
 | 4 | 홈 페이지 레이아웃 및 공통 UI | feature, ui | open | #1 |
 | 5 | 블로그 목록 및 카테고리 필터 | feature | open | #2, #4 |
