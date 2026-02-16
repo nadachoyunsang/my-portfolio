@@ -13,7 +13,7 @@
 | 7 | 관리자 - 블로그 글 관리 (CRUD) | feature, admin | done | #3, #5 |
 | 8 | 관리자 - 사이트 콘텐츠 관리 | feature, admin | done | #3, #4 |
 | 9 | 반응형 디자인 및 접근성 | enhancement, a11y | done | #4, #5, #6 |
-| 10 | Vercel 배포 설정 | setup, deploy | open | #1 |
+| 10 | Vercel 배포 설정 | setup, deploy | done | #1 |
 
 ## 라벨 정의
 
