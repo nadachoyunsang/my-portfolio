@@ -1,10 +1,15 @@
+import BlogSection from '@/components/BlogSection';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import IntroSection from '@/components/IntroSection';
+import { getPublishedPosts } from '@/lib/posts';
 import { getSiteContent } from '@/lib/siteContent';
 
 export default async function Home() {
-  const content = await getSiteContent();
+  const [content, posts] = await Promise.all([
+    getSiteContent(),
+    getPublishedPosts(),
+  ]);
 
   return (
     <>
@@ -18,12 +23,7 @@ export default async function Home() {
             '안녕하세요. 다큐멘터리, 책, 기사를 소개합니다.'
           }
         />
-        <section id="blog" className="min-h-[60vh] px-6 py-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-2xl font-bold">Blog</h2>
-            <p className="mt-4 text-muted">게시글이 곧 추가됩니다.</p>
-          </div>
-        </section>
+        <BlogSection posts={posts} />
         <Footer email={content.contact_email || 'hello@example.com'} />
       </main>
     </>
