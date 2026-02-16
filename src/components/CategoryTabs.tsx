@@ -16,12 +16,18 @@ interface CategoryTabsProps {
 
 export default function CategoryTabs({ active, onChange }: CategoryTabsProps) {
   return (
-    <div className="flex gap-2">
+    <div
+      role="tablist"
+      aria-label="카테고리 필터"
+      className="flex flex-wrap gap-2"
+    >
       {TABS.map(({ label, value }) => (
         <button
           key={label}
+          role="tab"
+          aria-selected={active === value}
           onClick={() => onChange(value)}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
             active === value
               ? 'bg-accent text-white'
               : 'text-muted hover:text-foreground hover:bg-foreground/5'

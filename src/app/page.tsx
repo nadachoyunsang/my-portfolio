@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main-content">
         <IntroSection
           name={content.intro_name || '홍길동'}
           job={content.intro_job || '기자 / 작가'}

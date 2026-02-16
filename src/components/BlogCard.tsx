@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 import type { PostSummary } from '@/lib/posts';
 
@@ -8,17 +9,17 @@ interface BlogCardProps {
 
 export default function BlogCard({ post }: BlogCardProps) {
   return (
-    <a
+    <Link
       href={`/blog/${post.slug}`}
-      className="group flex gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-card"
+      className="group flex flex-col gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-card sm:flex-row sm:gap-4"
     >
       {post.thumbnail_url && (
         <Image
           src={post.thumbnail_url}
-          alt={post.title}
+          alt=""
           width={96}
           height={96}
-          className="h-24 w-24 shrink-0 rounded-md object-cover"
+          className="h-40 w-full shrink-0 rounded-md object-cover sm:h-24 sm:w-24"
         />
       )}
       <div className="min-w-0 flex-1">
@@ -41,6 +42,6 @@ export default function BlogCard({ post }: BlogCardProps) {
           </div>
         )}
       </div>
-    </a>
+    </Link>
   );
 }
