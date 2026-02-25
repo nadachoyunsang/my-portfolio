@@ -4,14 +4,93 @@ import Link from 'next/link';
 import type { PostSummary } from '@/lib/posts';
 
 type BlogCardVariant = 'grid' | 'list';
+export type GridSize = 'sm' | 'md' | 'lg';
+
+const gridStyles: Record<
+  GridSize,
+  { title: string; excerpt: string; tag: string; padding: string; icon: number }
+> = {
+  sm: {
+    title: 'text-sm font-semibold',
+    excerpt: 'text-xs',
+    tag: 'text-[10px] px-1.5 py-0.5',
+    padding: 'p-3',
+    icon: 32,
+  },
+  md: {
+    title: 'text-base font-semibold',
+    excerpt: 'text-sm',
+    tag: 'text-xs px-2 py-0.5',
+    padding: 'p-4',
+    icon: 48,
+  },
+  lg: {
+    title: 'text-lg font-semibold',
+    excerpt: 'text-base',
+    tag: 'text-sm px-2.5 py-0.5',
+    padding: 'p-5',
+    icon: 56,
+  },
+};
+
+const listStyles: Record<
+  GridSize,
+  {
+    container: string;
+    title: string;
+    excerpt: string;
+    tag: string;
+    thumbClass: string;
+    thumbW: number;
+    thumbH: number;
+  }
+> = {
+  sm: {
+    container:
+      'group flex flex-row gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-card',
+    title: 'text-sm font-semibold',
+    excerpt: 'text-xs',
+    tag: 'text-[10px] px-1.5 py-0.5',
+    thumbClass: 'h-16 w-16 shrink-0 rounded-md object-cover',
+    thumbW: 64,
+    thumbH: 64,
+  },
+  md: {
+    container:
+      'group flex flex-col gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-card sm:flex-row sm:gap-4',
+    title: 'font-semibold',
+    excerpt: 'text-sm',
+    tag: 'text-xs px-2 py-0.5',
+    thumbClass: 'h-40 w-full shrink-0 rounded-md object-cover sm:h-24 sm:w-24',
+    thumbW: 96,
+    thumbH: 96,
+  },
+  lg: {
+    container:
+      'group flex flex-col gap-4 rounded-lg border border-border p-5 transition-colors hover:bg-card sm:flex-row sm:gap-5',
+    title: 'text-lg font-semibold',
+    excerpt: 'text-base',
+    tag: 'text-sm px-2.5 py-0.5',
+    thumbClass: 'h-48 w-full shrink-0 rounded-md object-cover sm:h-32 sm:w-32',
+    thumbW: 128,
+    thumbH: 128,
+  },
+};
 
 interface BlogCardProps {
   post: PostSummary;
   variant?: BlogCardVariant;
+  gridSize?: GridSize;
 }
 
-export default function BlogCard({ post, variant = 'grid' }: BlogCardProps) {
+export default function BlogCard({
+  post,
+  variant = 'grid',
+  gridSize = 'md',
+}: BlogCardProps) {
   if (variant === 'grid') {
+    const styles = gridStyles[gridSize];
+
     return (
       <Link
         href={`/portfolio/${post.slug}`}
@@ -29,8 +108,8 @@ export default function BlogCard({ post, variant = 'grid' }: BlogCardProps) {
           ) : (
             <div className="flex h-full items-center justify-center text-muted/40">
               <svg
-                width="48"
-                height="48"
+                width={styles.icon}
+                height={styles.icon}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -45,12 +124,14 @@ export default function BlogCard({ post, variant = 'grid' }: BlogCardProps) {
             </div>
           )}
         </div>
-        <div className="flex flex-1 flex-col p-4">
-          <h3 className="font-semibold group-hover:text-accent transition-colors">
+        <div className={`flex flex-1 flex-col ${styles.padding}`}>
+          <h3
+            className={`${styles.title} group-hover:text-accent transition-colors`}
+          >
             {post.title}
           </h3>
           {post.excerpt && (
-            <p className="mt-1 line-clamp-2 text-sm text-muted">
+            <p className={`mt-1 line-clamp-2 ${styles.excerpt} text-muted`}>
               {post.excerpt}
             </p>
           )}
@@ -59,7 +140,7 @@ export default function BlogCard({ post, variant = 'grid' }: BlogCardProps) {
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-foreground/5 px-2 py-0.5 text-xs text-muted"
+                  className={`rounded-full bg-foreground/5 ${styles.tag} text-muted`}
                 >
                   #{tag}
                 </span>
@@ -71,33 +152,34 @@ export default function BlogCard({ post, variant = 'grid' }: BlogCardProps) {
     );
   }
 
+  const ls = listStyles[gridSize];
+
   return (
-    <Link
-      href={`/portfolio/${post.slug}`}
-      className="group flex flex-col gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-card sm:flex-row sm:gap-4"
-    >
+    <Link href={`/portfolio/${post.slug}`} className={ls.container}>
       {post.thumbnail_url && (
         <Image
           src={post.thumbnail_url}
           alt=""
-          width={96}
-          height={96}
-          className="h-40 w-full shrink-0 rounded-md object-cover sm:h-24 sm:w-24"
+          width={ls.thumbW}
+          height={ls.thumbH}
+          className={ls.thumbClass}
         />
       )}
       <div className="min-w-0 flex-1">
-        <h3 className="font-semibold group-hover:text-accent transition-colors">
+        <h3 className={`${ls.title} group-hover:text-accent transition-colors`}>
           {post.title}
         </h3>
         {post.excerpt && (
-          <p className="mt-1 line-clamp-2 text-sm text-muted">{post.excerpt}</p>
+          <p className={`mt-1 line-clamp-2 ${ls.excerpt} text-muted`}>
+            {post.excerpt}
+          </p>
         )}
         {post.tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-foreground/5 px-2 py-0.5 text-xs text-muted"
+                className={`rounded-full bg-foreground/5 ${ls.tag} text-muted`}
               >
                 #{tag}
               </span>

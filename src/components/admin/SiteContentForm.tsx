@@ -10,12 +10,26 @@ interface SiteContentFormProps {
   content: Record<string, string>;
 }
 
-const FIELDS = [
+const FIELDS: {
+  key: string;
+  label: string;
+  multiline?: boolean;
+  options?: { value: string; label: string }[];
+}[] = [
   { key: 'site_name', label: '사이트 이름' },
   { key: 'intro_name', label: '이름' },
   { key: 'intro_job', label: '직업' },
   { key: 'intro_bio', label: '소개글', multiline: true },
   { key: 'contact_email', label: '이메일' },
+  {
+    key: 'default_grid_size',
+    label: '포트폴리오 기본 크기',
+    options: [
+      { value: 'sm', label: '소' },
+      { value: 'md', label: '중' },
+      { value: 'lg', label: '대' },
+    ],
+  },
 ];
 
 export default function SiteContentForm({ content }: SiteContentFormProps) {
@@ -59,10 +73,22 @@ export default function SiteContentForm({ content }: SiteContentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {FIELDS.map(({ key, label, multiline }) => (
+      {FIELDS.map(({ key, label, multiline, options }) => (
         <div key={key}>
           <label className="mb-1 block text-sm font-medium">{label}</label>
-          {multiline ? (
+          {options ? (
+            <select
+              value={values[key] || options[0].value}
+              onChange={(e) => handleChange(key, e.target.value)}
+              className={inputClass}
+            >
+              {options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ) : multiline ? (
             <textarea
               value={values[key] || ''}
               onChange={(e) => handleChange(key, e.target.value)}
