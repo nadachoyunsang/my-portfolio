@@ -84,6 +84,13 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 
 타입: `feat`, `fix`, `chore`, `style`, `refactor`, `docs`, `test`
 
+## 데이터베이스 규칙
+
+- `supabase db reset` 절대 금지 (사용자가 명시적으로 요청한 경우에만 허용)
+- 마이그레이션 적용: `npx supabase migration up` (증분 적용만)
+- 마이그레이션 파일은 기존 데이터를 보존하도록 작성 (DROP/TRUNCATE 금지, INSERT 시 `ON CONFLICT` 사용)
+- 데이터 충돌 가능성이 있는 마이그레이션: 충돌 시나리오와 대안 1~3개를 제시하고 사용자 선택 후 진행
+
 ## 명령어
 
 ```bash
