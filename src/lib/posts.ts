@@ -23,7 +23,7 @@ export async function getPublishedPosts(
       'id, title, slug, excerpt, thumbnail_url, category, tags, created_at',
     )
     .eq('published', true)
-    .order('created_at', { ascending: false });
+    .order('sort_order', { ascending: true });
 
   if (category) {
     query = query.eq('category', category);

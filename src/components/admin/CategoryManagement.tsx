@@ -1,5 +1,22 @@
 'use client';
 
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -17,6 +34,132 @@ interface CategoryManagementProps {
   categories: Category[];
 }
 
+function DragHandle(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      className="cursor-grab touch-none text-muted hover:text-foreground active:cursor-grabbing"
+      {...props}
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <circle cx="5" cy="3" r="1.5" />
+        <circle cx="11" cy="3" r="1.5" />
+        <circle cx="5" cy="8" r="1.5" />
+        <circle cx="11" cy="8" r="1.5" />
+        <circle cx="5" cy="13" r="1.5" />
+        <circle cx="11" cy="13" r="1.5" />
+      </svg>
+    </button>
+  );
+}
+
+function SortableCategory({
+  category,
+  editingId,
+  editName,
+  editSlug,
+  saving,
+  inputClass,
+  onEditNameChange,
+  onEditSlugChange,
+  onStartEdit,
+  onUpdate,
+  onCancelEdit,
+  onDelete,
+}: {
+  category: Category;
+  editingId: string | null;
+  editName: string;
+  editSlug: string;
+  saving: boolean;
+  inputClass: string;
+  onEditNameChange: (value: string) => void;
+  onEditSlugChange: (value: string) => void;
+  onStartEdit: (category: Category) => void;
+  onUpdate: (id: string) => void;
+  onCancelEdit: () => void;
+  onDelete: (id: string, name: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const isEditing = editingId === category.id;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-3 rounded-lg border border-border p-4 ${
+        isDragging ? 'z-10 bg-card shadow-lg' : 'bg-background'
+      }`}
+    >
+      {isEditing ? (
+        <div className="flex flex-1 items-center gap-3">
+          <input
+            type="text"
+            value={editName}
+            onChange={(e) => onEditNameChange(e.target.value)}
+            className={`${inputClass} flex-1`}
+            placeholder="카테고리 이름"
+          />
+          <input
+            type="text"
+            value={editSlug}
+            onChange={(e) => onEditSlugChange(e.target.value)}
+            className={`${inputClass} flex-1`}
+            placeholder="slug"
+          />
+          <Button onClick={() => onUpdate(category.id)} disabled={saving}>
+            저장
+          </Button>
+          <Button variant="ghost" onClick={onCancelEdit}>
+            취소
+          </Button>
+        </div>
+      ) : (
+        <>
+          <DragHandle {...attributes} {...listeners} />
+          <div className="flex-1">
+            <span className="font-medium">{category.name}</span>
+            <span className="ml-3 text-xs text-muted">{category.slug}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onStartEdit(category)}
+            className="text-sm text-muted hover:text-foreground transition-colors"
+          >
+            수정
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(category.id, category.name)}
+            className="text-sm text-red-400 hover:text-red-300 transition-colors"
+          >
+            삭제
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function CategoryManagement({
   categories: initialCategories,
 }: CategoryManagementProps) {
@@ -28,9 +171,52 @@ export default function CategoryManagement({
   const [editName, setEditName] = useState('');
   const [editSlug, setEditSlug] = useState('');
   const [saving, setSaving] = useState(false);
+  const [reordering, setReordering] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const inputClass =
     'w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-accent';
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = categories.findIndex((c) => c.id === active.id);
+    const newIndex = categories.findIndex((c) => c.id === over.id);
+    const reordered = arrayMove(categories, oldIndex, newIndex).map((c, i) => ({
+      ...c,
+      sort_order: i,
+    }));
+    setCategories(reordered);
+
+    setReordering(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const supabase = createClient() as any;
+
+    const results = await Promise.all(
+      reordered.map(({ id, sort_order }) =>
+        supabase.from('categories').update({ sort_order }).eq('id', id),
+      ),
+    );
+
+    const error = results.find((r: { error: unknown }) => r.error)?.error as
+      | { message: string }
+      | undefined;
+
+    if (error) {
+      setCategories(initialCategories);
+      alert('순서 저장에 실패했습니다.');
+    }
+
+    setReordering(false);
+    router.refresh();
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,39 +301,6 @@ export default function CategoryManagement({
     router.refresh();
   };
 
-  const handleMove = async (id: string, direction: 'up' | 'down') => {
-    const index = categories.findIndex((c) => c.id === id);
-    if (
-      (direction === 'up' && index === 0) ||
-      (direction === 'down' && index === categories.length - 1)
-    )
-      return;
-
-    const swapIndex = direction === 'up' ? index - 1 : index + 1;
-    const current = categories[index];
-    const swap = categories[swapIndex];
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
-    await Promise.all([
-      supabase
-        .from('categories')
-        .update({ sort_order: swap.sort_order })
-        .eq('id', current.id),
-      supabase
-        .from('categories')
-        .update({ sort_order: current.sort_order })
-        .eq('id', swap.id),
-    ]);
-
-    const updated = [...categories];
-    updated[index] = { ...current, sort_order: swap.sort_order };
-    updated[swapIndex] = { ...swap, sort_order: current.sort_order };
-    updated.sort((a, b) => a.sort_order - b.sort_order);
-    setCategories(updated);
-    router.refresh();
-  };
-
   const nameToSlug = (name: string) => {
     return name
       .toLowerCase()
@@ -160,88 +313,42 @@ export default function CategoryManagement({
   return (
     <div className="space-y-6">
       {/* 카테고리 목록 */}
-      <div className="space-y-2">
-        {categories.map((category, index) => (
-          <div
-            key={category.id}
-            className="flex items-center gap-3 rounded-lg border border-border p-4"
-          >
-            {editingId === category.id ? (
-              <div className="flex flex-1 items-center gap-3">
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className={`${inputClass} flex-1`}
-                  placeholder="카테고리 이름"
-                />
-                <input
-                  type="text"
-                  value={editSlug}
-                  onChange={(e) => setEditSlug(e.target.value)}
-                  className={`${inputClass} flex-1`}
-                  placeholder="slug"
-                />
-                <Button
-                  onClick={() => handleUpdate(category.id)}
-                  disabled={saving}
-                >
-                  저장
-                </Button>
-                <Button variant="ghost" onClick={() => setEditingId(null)}>
-                  취소
-                </Button>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col gap-1">
-                  <button
-                    type="button"
-                    onClick={() => handleMove(category.id, 'up')}
-                    disabled={index === 0}
-                    className="text-muted hover:text-foreground disabled:opacity-30 text-xs"
-                    aria-label="위로 이동"
-                  >
-                    &#9650;
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleMove(category.id, 'down')}
-                    disabled={index === categories.length - 1}
-                    className="text-muted hover:text-foreground disabled:opacity-30 text-xs"
-                    aria-label="아래로 이동"
-                  >
-                    &#9660;
-                  </button>
-                </div>
-                <div className="flex-1">
-                  <span className="font-medium">{category.name}</span>
-                  <span className="ml-3 text-xs text-muted">
-                    {category.slug}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => startEdit(category)}
-                  className="text-sm text-muted hover:text-foreground transition-colors"
-                >
-                  수정
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(category.id, category.name)}
-                  className="text-sm text-red-400 hover:text-red-300 transition-colors"
-                >
-                  삭제
-                </button>
-              </>
+      {reordering && <p className="text-xs text-muted">순서 저장 중...</p>}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={categories.map((c) => c.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-2">
+            {categories.map((category) => (
+              <SortableCategory
+                key={category.id}
+                category={category}
+                editingId={editingId}
+                editName={editName}
+                editSlug={editSlug}
+                saving={saving}
+                inputClass={inputClass}
+                onEditNameChange={setEditName}
+                onEditSlugChange={setEditSlug}
+                onStartEdit={startEdit}
+                onUpdate={handleUpdate}
+                onCancelEdit={() => setEditingId(null)}
+                onDelete={handleDelete}
+              />
+            ))}
+            {categories.length === 0 && (
+              <p className="py-8 text-center text-muted">
+                카테고리가 없습니다.
+              </p>
             )}
           </div>
-        ))}
-        {categories.length === 0 && (
-          <p className="py-8 text-center text-muted">카테고리가 없습니다.</p>
-        )}
-      </div>
+        </SortableContext>
+      </DndContext>
 
       {/* 새 카테고리 추가 */}
       <form onSubmit={handleAdd} className="space-y-4">
