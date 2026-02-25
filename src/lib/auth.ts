@@ -3,7 +3,10 @@ import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 
 export async function getUser(): Promise<User | null> {
-  if (process.env.BYPASS_AUTH === 'true') {
+  if (
+    process.env.BYPASS_AUTH === 'true' &&
+    process.env.NODE_ENV === 'development'
+  ) {
     return {
       id: 'local-dev-user',
       email: process.env.ADMIN_EMAIL || 'admin@local.test',
@@ -23,7 +26,10 @@ export async function getUser(): Promise<User | null> {
 }
 
 export async function getAdminUser(): Promise<User | null> {
-  if (process.env.BYPASS_AUTH === 'true') {
+  if (
+    process.env.BYPASS_AUTH === 'true' &&
+    process.env.NODE_ENV === 'development'
+  ) {
     return getUser();
   }
 

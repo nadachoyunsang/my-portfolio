@@ -18,11 +18,9 @@ export async function PUT(request: Request) {
 
   const supabase = await createClient();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const client = supabase as any;
   const results = await Promise.all(
     orders.map(({ id, sort_order }) =>
-      client.from('posts').update({ sort_order }).eq('id', id),
+      supabase.from('posts').update({ sort_order }).eq('id', id),
     ),
   );
 

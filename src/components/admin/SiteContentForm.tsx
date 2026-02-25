@@ -45,8 +45,7 @@ export default function SiteContentForm({ content }: SiteContentFormProps) {
     e.preventDefault();
     setSaving(true);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
 
     const updates = FIELDS.map(({ key }) =>
       supabase

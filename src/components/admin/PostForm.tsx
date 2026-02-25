@@ -91,16 +91,20 @@ export default function PostForm({ post, categories }: PostFormProps) {
       published,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const client = supabase as any;
-
     if (!isEdit) {
-      await client.rpc('increment_posts_sort_order');
+      const { error: rpcError } = await supabase.rpc(
+        'increment_posts_sort_order',
+      );
+      if (rpcError) {
+        setSaving(false);
+        alert('글 순서 초기화에 실패했습니다.');
+        return;
+      }
     }
 
     const { error } = isEdit
-      ? await client.from('posts').update(postData).eq('id', post.id)
-      : await client.from('posts').insert({ ...postData, sort_order: 0 });
+      ? await supabase.from('posts').update(postData).eq('id', post.id)
+      : await supabase.from('posts').insert({ ...postData, sort_order: 0 });
 
     setSaving(false);
 

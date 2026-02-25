@@ -36,8 +36,8 @@ export default function AwardManagement({
     if (!newName.trim() || !newYear.trim() || !newOrganization.trim()) return;
 
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+
+    const supabase = createClient();
 
     const { data, error } = await supabase
       .from('awards')
@@ -66,8 +66,7 @@ export default function AwardManagement({
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`"${name}" 수상 내역을 삭제하시겠습니까?`)) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
     const { error } = await supabase.from('awards').delete().eq('id', id);
 
     if (error) {
@@ -91,8 +90,8 @@ export default function AwardManagement({
       return;
 
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+
+    const supabase = createClient();
     const { error } = await supabase
       .from('awards')
       .update({

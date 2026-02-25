@@ -196,8 +196,7 @@ export default function CategoryManagement({
     setCategories(reordered);
 
     setReordering(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
 
     const results = await Promise.all(
       reordered.map(({ id, sort_order }) =>
@@ -223,8 +222,7 @@ export default function CategoryManagement({
     if (!newName.trim() || !newSlug.trim()) return;
 
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
     const maxOrder = Math.max(0, ...categories.map((c) => c.sort_order));
 
     const { data, error } = await supabase
@@ -253,8 +251,7 @@ export default function CategoryManagement({
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`"${name}" 카테고리를 삭제하시겠습니까?`)) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
     const { error } = await supabase.from('categories').delete().eq('id', id);
 
     if (error) {
@@ -276,8 +273,7 @@ export default function CategoryManagement({
     if (!editName.trim() || !editSlug.trim()) return;
 
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
     const { error } = await supabase
       .from('categories')
       .update({ name: editName.trim(), slug: editSlug.trim() })
