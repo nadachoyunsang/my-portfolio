@@ -20,6 +20,13 @@ export default function AdminPage() {
           <p className="mt-1 text-sm text-muted">카테고리 추가, 수정, 삭제</p>
         </Link>
         <Link
+          href="/admin/awards"
+          className="rounded-lg border border-border p-6 transition-colors hover:bg-card"
+        >
+          <h3 className="font-semibold">수상 내역 관리</h3>
+          <p className="mt-1 text-sm text-muted">수상 내역 추가, 수정, 삭제</p>
+        </Link>
+        <Link
           href="/admin/site"
           className="rounded-lg border border-border p-6 transition-colors hover:bg-card"
         >

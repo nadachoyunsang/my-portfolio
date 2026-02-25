@@ -1,10 +1,18 @@
+import type { Award } from '@/types/award';
+
 interface IntroSectionProps {
   name: string;
   job: string;
   bio: string;
+  awards: Award[];
 }
 
-export default function IntroSection({ name, job, bio }: IntroSectionProps) {
+export default function IntroSection({
+  name,
+  job,
+  bio,
+  awards,
+}: IntroSectionProps) {
   return (
     <section
       id="about"
@@ -18,6 +26,20 @@ export default function IntroSection({ name, job, bio }: IntroSectionProps) {
         <p className="mt-8 text-lg leading-relaxed text-foreground/80 whitespace-pre-line">
           {bio}
         </p>
+        {awards.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-lg font-semibold text-foreground/90">
+              수상 내역
+            </h2>
+            <ul className="mt-4 space-y-2 text-sm text-foreground/70">
+              {awards.map((award) => (
+                <li key={award.id}>
+                  {award.name} — {award.organization} ({award.year})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );

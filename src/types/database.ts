@@ -98,6 +98,32 @@ export interface Database {
           updated_at?: string;
         };
       };
+      awards: {
+        Row: {
+          id: string;
+          name: string;
+          year: number;
+          organization: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          year: number;
+          organization: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          year?: number;
+          organization?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       featured_content: {
         Row: {
           id: string;
