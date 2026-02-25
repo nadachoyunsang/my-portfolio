@@ -133,6 +133,8 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
   });
 
+  if (!editor) return null;
+
   return (
     <div className="rounded-lg border border-border bg-card">
       <MenuBar editor={editor} />
