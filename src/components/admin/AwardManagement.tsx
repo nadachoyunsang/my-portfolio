@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
 import type { Award } from '@/types/award';
 
@@ -15,6 +16,7 @@ export default function AwardManagement({
   awards: initialAwards,
 }: AwardManagementProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [awards, setAwards] = useState(initialAwards);
   const [newName, setNewName] = useState('');
   const [newYear, setNewYear] = useState('');
@@ -31,9 +33,21 @@ export default function AwardManagement({
   const sortByYearDesc = (list: Award[]) =>
     [...list].sort((a, b) => b.year - a.year);
 
+  const parseYear = (value: string): number | null => {
+    const parsed = parseInt(value, 10);
+    if (isNaN(parsed) || parsed < 1900 || parsed > 2100) return null;
+    return parsed;
+  };
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim() || !newYear.trim() || !newOrganization.trim()) return;
+
+    const year = parseYear(newYear);
+    if (year === null) {
+      toast('연도는 1900~2100 사이의 숫자를 입력해주세요.');
+      return;
+    }
 
     setSaving(true);
 
@@ -43,7 +57,7 @@ export default function AwardManagement({
       .from('awards')
       .insert({
         name: newName.trim(),
-        year: parseInt(newYear, 10),
+        year,
         organization: newOrganization.trim(),
       })
       .select()
@@ -52,7 +66,7 @@ export default function AwardManagement({
     setSaving(false);
 
     if (error) {
-      alert(`추가 실패: ${error.message}`);
+      toast('수상 내역 추가에 실패했습니다.');
       return;
     }
 
@@ -70,7 +84,7 @@ export default function AwardManagement({
     const { error } = await supabase.from('awards').delete().eq('id', id);
 
     if (error) {
-      alert(`삭제 실패: ${error.message}`);
+      toast('수상 내역 삭제에 실패했습니다.');
       return;
     }
 
@@ -89,6 +103,12 @@ export default function AwardManagement({
     if (!editName.trim() || !editYear.trim() || !editOrganization.trim())
       return;
 
+    const year = parseYear(editYear);
+    if (year === null) {
+      toast('연도는 1900~2100 사이의 숫자를 입력해주세요.');
+      return;
+    }
+
     setSaving(true);
 
     const supabase = createClient();
@@ -96,7 +116,7 @@ export default function AwardManagement({
       .from('awards')
       .update({
         name: editName.trim(),
-        year: parseInt(editYear, 10),
+        year,
         organization: editOrganization.trim(),
       })
       .eq('id', id);
@@ -104,7 +124,7 @@ export default function AwardManagement({
     setSaving(false);
 
     if (error) {
-      alert(`수정 실패: ${error.message}`);
+      toast('수상 내역 수정에 실패했습니다.');
       return;
     }
 
@@ -115,7 +135,7 @@ export default function AwardManagement({
             ? {
                 ...a,
                 name: editName.trim(),
-                year: parseInt(editYear, 10),
+                year,
                 organization: editOrganization.trim(),
               }
             : a,

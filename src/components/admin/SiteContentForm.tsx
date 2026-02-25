@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
 
 interface SiteContentFormProps {
@@ -34,6 +35,7 @@ const FIELDS: {
 
 export default function SiteContentForm({ content }: SiteContentFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [values, setValues] = useState<Record<string, string>>(content);
   const [saving, setSaving] = useState(false);
 
@@ -59,12 +61,12 @@ export default function SiteContentForm({ content }: SiteContentFormProps) {
     setSaving(false);
 
     if (error) {
-      alert(`저장 실패: ${error.message}`);
+      toast('저장에 실패했습니다.');
       return;
     }
 
     router.refresh();
-    alert('저장되었습니다.');
+    toast('저장되었습니다.', 'success');
   };
 
   const inputClass =

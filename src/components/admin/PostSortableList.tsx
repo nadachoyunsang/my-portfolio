@@ -20,6 +20,8 @@ import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { useToast } from '@/components/ui/Toast';
+
 interface PostItem {
   id: string;
   title: string;
@@ -108,6 +110,7 @@ export default function PostSortableList({
 }) {
   const [posts, setPosts] = useState(initialPosts);
   const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -142,11 +145,11 @@ export default function PostSortableList({
 
       if (!res.ok) {
         setPosts(posts);
-        alert('순서 저장에 실패했습니다.');
+        toast('순서 저장에 실패했습니다.');
       }
     } catch {
       setPosts(posts);
-      alert('순서 저장에 실패했습니다.');
+      toast('순서 저장에 실패했습니다.');
     } finally {
       setSaving(false);
     }

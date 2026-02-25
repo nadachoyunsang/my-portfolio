@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import TiptapEditor from '@/components/admin/TiptapEditor';
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { uploadImage } from '@/lib/image';
 import { generateSlug } from '@/lib/slug';
 import { createClient } from '@/lib/supabase/client';
@@ -27,6 +28,7 @@ interface PostFormProps {
 
 export default function PostForm({ post, categories }: PostFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const isEdit = !!post;
 
   const [title, setTitle] = useState(post?.title ?? '');
@@ -61,7 +63,7 @@ export default function PostForm({ post, categories }: PostFormProps) {
       const url = await uploadImage(supabase, file, 600, 'thumbnails');
       setThumbnailUrl(url);
     } catch {
-      alert('썸네일 업로드에 실패했습니다.');
+      toast('썸네일 업로드에 실패했습니다.');
     }
     e.target.value = '';
   };
@@ -97,7 +99,7 @@ export default function PostForm({ post, categories }: PostFormProps) {
       );
       if (rpcError) {
         setSaving(false);
-        alert('글 순서 초기화에 실패했습니다.');
+        toast('글 순서 초기화에 실패했습니다.');
         return;
       }
     }
@@ -109,7 +111,7 @@ export default function PostForm({ post, categories }: PostFormProps) {
     setSaving(false);
 
     if (error) {
-      alert(`저장 실패: ${error.message}`);
+      toast('글 저장에 실패했습니다.');
       return;
     }
 

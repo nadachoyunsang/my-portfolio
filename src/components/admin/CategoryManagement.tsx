@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
 
 interface Category {
@@ -164,6 +165,7 @@ export default function CategoryManagement({
   categories: initialCategories,
 }: CategoryManagementProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [categories, setCategories] = useState(initialCategories);
   const [newName, setNewName] = useState('');
   const [newSlug, setNewSlug] = useState('');
@@ -210,7 +212,7 @@ export default function CategoryManagement({
 
     if (error) {
       setCategories(initialCategories);
-      alert('순서 저장에 실패했습니다.');
+      toast('순서 저장에 실패했습니다.');
     }
 
     setReordering(false);
@@ -238,7 +240,7 @@ export default function CategoryManagement({
     setSaving(false);
 
     if (error) {
-      alert(`추가 실패: ${error.message}`);
+      toast('카테고리 추가에 실패했습니다.');
       return;
     }
 
@@ -255,7 +257,7 @@ export default function CategoryManagement({
     const { error } = await supabase.from('categories').delete().eq('id', id);
 
     if (error) {
-      alert(`삭제 실패: ${error.message}`);
+      toast('카테고리 삭제에 실패했습니다.');
       return;
     }
 
@@ -282,7 +284,7 @@ export default function CategoryManagement({
     setSaving(false);
 
     if (error) {
-      alert(`수정 실패: ${error.message}`);
+      toast('카테고리 수정에 실패했습니다.');
       return;
     }
 

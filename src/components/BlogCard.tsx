@@ -100,7 +100,7 @@ export default function BlogCard({
           {post.thumbnail_url ? (
             <Image
               src={post.thumbnail_url}
-              alt=""
+              alt={post.title}
               fill
               sizes="(max-width: 640px) 100vw, 50vw"
               className="object-cover"
