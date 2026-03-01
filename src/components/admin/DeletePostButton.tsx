@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
+import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
 
 interface DeletePostButtonProps {
@@ -14,16 +15,16 @@ export default function DeletePostButton({
   postTitle,
 }: DeletePostButtonProps) {
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleDelete = async () => {
     if (!confirm(`"${postTitle}" 글을 삭제하시겠습니까?`)) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
     const { error } = await supabase.from('posts').delete().eq('id', postId);
 
     if (error) {
-      alert(`삭제 실패: ${error.message}`);
+      toast('글 삭제에 실패했습니다.');
       return;
     }
 

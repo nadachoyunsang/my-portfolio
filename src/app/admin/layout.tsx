@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import LogoutButton from '@/components/LogoutButton';
+import { ToastProvider } from '@/components/ui/Toast';
 import { getAdminUser } from '@/lib/auth';
 
 export default async function AdminLayout({
@@ -13,17 +15,24 @@ export default async function AdminLayout({
   if (!user) notFound();
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-neutral-800">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <h1 className="text-lg font-semibold text-foreground">관리자</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-neutral-400">{user.email}</span>
-            <LogoutButton />
+    <ToastProvider>
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-neutral-800">
+          <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+            <Link
+              href="/admin"
+              className="text-lg font-semibold text-foreground hover:text-accent transition-colors"
+            >
+              관리자
+            </Link>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-neutral-400">{user.email}</span>
+              <LogoutButton />
+            </div>
           </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
-    </div>
+        </header>
+        <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
+      </div>
+    </ToastProvider>
   );
 }

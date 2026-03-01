@@ -1,17 +1,21 @@
 import type { NextConfig } from 'next';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
-const supabaseHostname = supabaseUrl
-  ? new URL(supabaseUrl).hostname
-  : '*.supabase.co';
+const isLocal = process.env.NODE_ENV === 'development';
 
 const nextConfig: NextConfig = {
   images: {
+    dangerouslyAllowLocalIP: isLocal,
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: supabaseHostname,
+        hostname: '*.supabase.co',
       },
+      ...(isLocal
+        ? [
+            { protocol: 'http' as const, hostname: '127.0.0.1' },
+            { protocol: 'http' as const, hostname: 'localhost' },
+          ]
+        : []),
     ],
   },
 };

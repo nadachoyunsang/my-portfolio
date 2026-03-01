@@ -1,7 +1,9 @@
 export async function resizeImage(file: File, maxWidth: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
     img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
       const scale = Math.min(1, maxWidth / img.width);
       const canvas = document.createElement('canvas');
       canvas.width = img.width * scale;
@@ -14,8 +16,11 @@ export async function resizeImage(file: File, maxWidth: number): Promise<Blob> {
         0.85,
       );
     };
-    img.onerror = () => reject(new Error('이미지 로드 실패'));
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('이미지 로드 실패'));
+    };
+    img.src = objectUrl;
   });
 }
 

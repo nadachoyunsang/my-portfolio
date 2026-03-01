@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import PostSortableList from '@/components/admin/PostSortableList';
 import { getCategories } from '@/lib/categories';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
@@ -15,13 +16,22 @@ export default async function AdminPostsPage() {
   const { data } = await supabase
     .from('posts')
     .select()
-    .order('created_at', { ascending: false });
+    .order('sort_order', { ascending: true });
 
   const posts = data as Post[] | null;
 
   const categoryLabel = Object.fromEntries(
     categories.map((c) => [c.slug, c.name]),
   );
+
+  const postItems = (posts ?? []).map((post) => ({
+    id: post.id,
+    title: post.title,
+    category: post.category,
+    categoryLabel: categoryLabel[post.category] ?? post.category,
+    published: post.published,
+    created_at: post.created_at,
+  }));
 
   return (
     <div>
@@ -35,39 +45,8 @@ export default async function AdminPostsPage() {
         </Link>
       </div>
 
-      <div className="mt-6 space-y-2">
-        {posts && posts.length > 0 ? (
-          posts.map((post) => (
-            <Link
-              key={post.id}
-              href={`/admin/posts/${post.id}/edit`}
-              className="flex items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-card"
-            >
-              <div>
-                <span className="font-medium">{post.title}</span>
-                <span className="ml-3 text-xs text-muted">
-                  {categoryLabel[post.category] ?? post.category}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs ${
-                    post.published
-                      ? 'bg-green-900/30 text-green-400'
-                      : 'bg-neutral-800 text-muted'
-                  }`}
-                >
-                  {post.published ? '공개' : '비공개'}
-                </span>
-                <span className="text-xs text-muted">
-                  {new Date(post.created_at).toLocaleDateString('ko-KR')}
-                </span>
-              </div>
-            </Link>
-          ))
-        ) : (
-          <p className="py-12 text-center text-muted">글이 없습니다.</p>
-        )}
+      <div className="mt-6">
+        <PostSortableList initialPosts={postItems} />
       </div>
     </div>
   );

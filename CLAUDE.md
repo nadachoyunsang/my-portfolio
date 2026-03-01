@@ -84,6 +84,22 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 
 타입: `feat`, `fix`, `chore`, `style`, `refactor`, `docs`, `test`
 
+## 프론트엔드 구현 규칙
+
+글로벌 "구현 기본 규칙"의 프로젝트 특화 확장.
+
+- 접근성: 콘텐츠 이미지에 의미 있는 alt 텍스트 필수, 폼 요소에 label 연결
+- 사용자 피드백: `alert()`/`prompt()` 사용 금지 → Toast(`useToast`) 또는 인라인 UI 사용. `confirm()`은 삭제 등 파괴적 작업 확인에만 허용
+- 브라우저 리소스: `URL.createObjectURL()` 사용 후 반드시 `revokeObjectURL()` 호출. `addEventListener` 등록 시 cleanup 필수
+- Supabase 타입: `src/types/database.ts`에 테이블/함수 타입 정의 유지. `as any` 대신 타입 정의 수정으로 해결
+
+## 데이터베이스 규칙
+
+- `supabase db reset` 절대 금지 (사용자가 명시적으로 요청한 경우에만 허용)
+- 마이그레이션 적용: `npx supabase migration up` (증분 적용만)
+- 마이그레이션 파일은 기존 데이터를 보존하도록 작성 (DROP/TRUNCATE 금지, INSERT 시 `ON CONFLICT` 사용)
+- 데이터 충돌 가능성이 있는 마이그레이션: 충돌 시나리오와 대안 1~3개를 제시하고 사용자 선택 후 진행
+
 ## 명령어
 
 ```bash

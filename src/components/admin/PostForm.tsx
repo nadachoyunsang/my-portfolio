@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import TiptapEditor from '@/components/admin/TiptapEditor';
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { uploadImage } from '@/lib/image';
 import { generateSlug } from '@/lib/slug';
 import { createClient } from '@/lib/supabase/client';
@@ -27,6 +28,7 @@ interface PostFormProps {
 
 export default function PostForm({ post, categories }: PostFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const isEdit = !!post;
 
   const [title, setTitle] = useState(post?.title ?? '');
@@ -52,14 +54,22 @@ export default function PostForm({ post, categories }: PostFormProps) {
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      e.target.value = '';
+      return;
+    }
     try {
       const supabase = createClient();
       const url = await uploadImage(supabase, file, 600, 'thumbnails');
       setThumbnailUrl(url);
     } catch {
-      alert('썸네일 업로드에 실패했습니다.');
+      toast('썸네일 업로드에 실패했습니다.');
     }
+    e.target.value = '';
+  };
+
+  const handleThumbnailRemove = () => {
+    setThumbnailUrl('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,16 +93,25 @@ export default function PostForm({ post, categories }: PostFormProps) {
       published,
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const client = supabase as any;
+    if (!isEdit) {
+      const { error: rpcError } = await supabase.rpc(
+        'increment_posts_sort_order',
+      );
+      if (rpcError) {
+        setSaving(false);
+        toast('글 순서 초기화에 실패했습니다.');
+        return;
+      }
+    }
+
     const { error } = isEdit
-      ? await client.from('posts').update(postData).eq('id', post.id)
-      : await client.from('posts').insert(postData);
+      ? await supabase.from('posts').update(postData).eq('id', post.id)
+      : await supabase.from('posts').insert({ ...postData, sort_order: 0 });
 
     setSaving(false);
 
     if (error) {
-      alert(`저장 실패: ${error.message}`);
+      toast('글 저장에 실패했습니다.');
       return;
     }
 
@@ -168,22 +187,41 @@ export default function PostForm({ post, categories }: PostFormProps) {
 
       <div>
         <label className="mb-1 block text-sm font-medium">썸네일</label>
-        <div className="flex items-center gap-4">
+        {thumbnailUrl ? (
+          <div className="flex items-center gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={thumbnailUrl}
+              alt="썸네일 미리보기"
+              className="h-20 w-20 rounded object-cover"
+            />
+            <div className="flex gap-2">
+              <label className="cursor-pointer text-sm text-muted hover:text-foreground transition-colors">
+                변경
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailUpload}
+                  className="hidden"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={handleThumbnailRemove}
+                className="text-sm text-red-400 hover:text-red-300 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        ) : (
           <input
             type="file"
             accept="image/*"
             onChange={handleThumbnailUpload}
             className="text-sm text-muted"
           />
-          {thumbnailUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={thumbnailUrl}
-              alt="썸네일 미리보기"
-              className="h-16 w-16 rounded object-cover"
-            />
-          )}
-        </div>
+        )}
       </div>
 
       <div>

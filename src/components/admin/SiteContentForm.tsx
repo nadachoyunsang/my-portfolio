@@ -4,22 +4,38 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
 
 interface SiteContentFormProps {
   content: Record<string, string>;
 }
 
-const FIELDS = [
+const FIELDS: {
+  key: string;
+  label: string;
+  multiline?: boolean;
+  options?: { value: string; label: string }[];
+}[] = [
   { key: 'site_name', label: '사이트 이름' },
   { key: 'intro_name', label: '이름' },
   { key: 'intro_job', label: '직업' },
   { key: 'intro_bio', label: '소개글', multiline: true },
   { key: 'contact_email', label: '이메일' },
+  {
+    key: 'default_grid_size',
+    label: '포트폴리오 기본 크기',
+    options: [
+      { value: 'sm', label: '소' },
+      { value: 'md', label: '중' },
+      { value: 'lg', label: '대' },
+    ],
+  },
 ];
 
 export default function SiteContentForm({ content }: SiteContentFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [values, setValues] = useState<Record<string, string>>(content);
   const [saving, setSaving] = useState(false);
 
@@ -31,8 +47,7 @@ export default function SiteContentForm({ content }: SiteContentFormProps) {
     e.preventDefault();
     setSaving(true);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = createClient() as any;
+    const supabase = createClient();
 
     const updates = FIELDS.map(({ key }) =>
       supabase
@@ -46,12 +61,12 @@ export default function SiteContentForm({ content }: SiteContentFormProps) {
     setSaving(false);
 
     if (error) {
-      alert(`저장 실패: ${error.message}`);
+      toast('저장에 실패했습니다.');
       return;
     }
 
     router.refresh();
-    alert('저장되었습니다.');
+    toast('저장되었습니다.', 'success');
   };
 
   const inputClass =
@@ -59,10 +74,22 @@ export default function SiteContentForm({ content }: SiteContentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {FIELDS.map(({ key, label, multiline }) => (
+      {FIELDS.map(({ key, label, multiline, options }) => (
         <div key={key}>
           <label className="mb-1 block text-sm font-medium">{label}</label>
-          {multiline ? (
+          {options ? (
+            <select
+              value={values[key] || options[0].value}
+              onChange={(e) => handleChange(key, e.target.value)}
+              className={inputClass}
+            >
+              {options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ) : multiline ? (
             <textarea
               value={values[key] || ''}
               onChange={(e) => handleChange(key, e.target.value)}

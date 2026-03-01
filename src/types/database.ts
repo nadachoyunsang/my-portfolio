@@ -33,6 +33,7 @@ export interface Database {
           sort_order?: number;
           created_at?: string;
         };
+        Relationships: [];
       };
       posts: {
         Row: {
@@ -45,6 +46,7 @@ export interface Database {
           category: Category;
           tags: string[];
           published: boolean;
+          sort_order: number;
           created_at: string;
           updated_at: string;
         };
@@ -58,6 +60,7 @@ export interface Database {
           category: Category;
           tags?: string[];
           published?: boolean;
+          sort_order?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -71,9 +74,11 @@ export interface Database {
           category?: Category;
           tags?: string[];
           published?: boolean;
+          sort_order?: number;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       site_content: {
         Row: {
@@ -94,6 +99,34 @@ export interface Database {
           value?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
+      };
+      awards: {
+        Row: {
+          id: string;
+          name: string;
+          year: number;
+          organization: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          year: number;
+          organization: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          year?: number;
+          organization?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       featured_content: {
         Row: {
@@ -126,13 +159,17 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      increment_posts_sort_order: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;
