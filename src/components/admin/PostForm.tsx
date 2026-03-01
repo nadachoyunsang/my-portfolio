@@ -98,8 +98,9 @@ export default function PostForm({ post, categories }: PostFormProps) {
         'increment_posts_sort_order',
       );
       if (rpcError) {
+        console.error('RPC error:', rpcError);
         setSaving(false);
-        toast('글 순서 초기화에 실패했습니다.');
+        toast(`글 순서 초기화에 실패했습니다: ${rpcError.message}`);
         return;
       }
     }
