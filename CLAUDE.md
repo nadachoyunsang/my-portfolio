@@ -50,25 +50,30 @@ src/
 - 항상 다크 테마 (라이트 모드 없음)
 - 인라인 스타일 사용하지 않음
 
-## Git 브랜치 전략 (로컬 전용)
+## Git 브랜치 전략
 
-- `main`: 안정 브랜치
-- `feature/<이슈번호>-<설명>`: 기능 개발 브랜치
-- 머지 전략: squash merge (`git merge --squash`)
-- 원격 레포지토리 없음 (로컬 전용)
+- `main`: 배포 브랜치, 항상 배포 가능 상태 유지
+- `develop`: 통합 개발 브랜치, feature 브랜치의 병합 대상
+- `feature/<이슈번호>-<설명>`: 기능 개발 브랜치, `develop`에서 분기 후 PR로 병합
+- 머지 전략: squash merge (PR 통해 병합)
+- 원격 레포지토리: GitHub 사용
 
 ### 브랜치 네이밍
 
+설명은 영어 kebab-case로 작성.
+
 ```
-feature/1-프로젝트-초기-설정
-feature/2-DB-스키마-설계
+feature/1-initial-project-setup
+feature/2-db-schema-design
 ```
 
-## 로컬 이슈 관리
+## 이슈 및 PR 관리
 
-- `issues/` 디렉토리에 마크다운으로 관리
-- `issues/README.md`에 이슈 인덱스
-- 상태 변경 시 개별 이슈 파일 + README.md 동시 업데이트
+- 이슈: GitHub Issues (creating-github-issues 스킬)
+- PR: GitHub Pull Requests (creating-pull-requests 스킬)
+- feature → develop PR: `Closes #이슈번호` 포함, 이슈 자동 close는 develop → main 머지 시 발생
+- develop → main PR: 배포 시점에 생성
+- 한국어 작성
 
 ## 커밋 메시지
 
