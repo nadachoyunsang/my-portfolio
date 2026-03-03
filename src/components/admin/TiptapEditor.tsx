@@ -2,10 +2,13 @@
 
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Fragment } from '@tiptap/pm/model';
+import { NodeSelection } from '@tiptap/pm/state';
 import Youtube from '@tiptap/extension-youtube';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { type Editor, EditorContent, useEditor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useToast } from '@/components/ui/Toast';
 import { uploadImage } from '@/lib/image';
@@ -171,6 +174,96 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   );
 }
 
+function moveNode(editor: Editor, direction: 'up' | 'down'): boolean {
+  const { state } = editor;
+  const { selection } = state;
+
+  if (!(selection instanceof NodeSelection)) return false;
+
+  const node = selection.node;
+  const pos = selection.from;
+  const $pos = state.doc.resolve(pos);
+  const index = $pos.index();
+  const parent = $pos.parent;
+
+  if (direction === 'up' && index === 0) return false;
+  if (direction === 'down' && index >= parent.childCount - 1) return false;
+
+  const tr = state.tr;
+
+  if (direction === 'up') {
+    const prevNode = parent.child(index - 1);
+    const prevStart = pos - prevNode.nodeSize;
+    tr.replaceWith(
+      prevStart,
+      pos + node.nodeSize,
+      Fragment.fromArray([node, prevNode]),
+    );
+    tr.setSelection(NodeSelection.create(tr.doc, prevStart));
+  } else {
+    const nextNode = parent.child(index + 1);
+    const nextEnd = pos + node.nodeSize + nextNode.nodeSize;
+    tr.replaceWith(pos, nextEnd, Fragment.fromArray([nextNode, node]));
+    tr.setSelection(NodeSelection.create(tr.doc, pos + nextNode.nodeSize));
+  }
+
+  editor.view.dispatch(tr);
+  return true;
+}
+
+function MediaBubbleMenu({ editor }: { editor: Editor }) {
+  const btnClass =
+    'rounded px-2 py-1 text-sm text-muted hover:text-foreground hover:bg-foreground/5 transition-colors';
+
+  const handleMoveUp = useCallback(() => {
+    moveNode(editor, 'up');
+  }, [editor]);
+
+  const handleMoveDown = useCallback(() => {
+    moveNode(editor, 'down');
+  }, [editor]);
+
+  const handleDelete = useCallback(() => {
+    editor.commands.deleteSelection();
+  }, [editor]);
+
+  return (
+    <BubbleMenu
+      editor={editor}
+      shouldShow={({ editor: e }) =>
+        e.isActive('image') || e.isActive('youtube')
+      }
+    >
+      <div className="flex gap-1 rounded-lg border border-border bg-card p-1 shadow-lg">
+        <button
+          type="button"
+          onClick={handleMoveUp}
+          className={btnClass}
+          title="위로 이동"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          onClick={handleMoveDown}
+          className={btnClass}
+          title="아래로 이동"
+        >
+          ↓
+        </button>
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="rounded px-2 py-1 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
+          title="삭제"
+        >
+          ✕
+        </button>
+      </div>
+    </BubbleMenu>
+  );
+}
+
 export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -204,6 +297,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     <div className="rounded-lg border border-border bg-card">
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
+      <MediaBubbleMenu editor={editor} />
     </div>
   );
 }
