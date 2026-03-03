@@ -46,7 +46,12 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       try {
         const supabase = createClient();
         const url = await uploadImage(supabase, file, 1200, 'posts');
-        editor.chain().focus().setImage({ src: url }).run();
+        editor
+          .chain()
+          .focus()
+          .setImage({ src: url })
+          .createParagraphNear()
+          .run();
       } catch {
         toast('이미지 업로드에 실패했습니다.');
       }
@@ -63,7 +68,12 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       return;
     }
 
-    editor.commands.setYoutubeVideo({ src: trimmed });
+    editor
+      .chain()
+      .focus()
+      .setYoutubeVideo({ src: trimmed })
+      .createParagraphNear()
+      .run();
     setYoutubeUrl('');
     setShowYoutubeInput(false);
   };
