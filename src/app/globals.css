@@ -100,13 +100,18 @@ img[data-align="right"] {
   margin-left: auto;
 }
 
-/* 이미지 정렬 - 에디터 (리사이즈 컨테이너가 display:flex) */
+/* 이미지 정렬 - 에디터 (리사이즈 컨테이너) */
 [data-resize-container][data-align="center"] {
-  justify-content: center;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 [data-resize-container][data-align="right"] {
-  justify-content: flex-end;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
 }
 
 /* 유튜브 정렬 */
