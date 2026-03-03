@@ -45,3 +45,82 @@ body {
 .skip-link:focus {
   top: 0;
 }
+
+/* Tiptap 이미지 리사이즈 핸들 */
+[data-resize-container] {
+  position: relative;
+  display: inline-block;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+[data-resize-handle] {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+[data-resize-handle][data-direction="top-left"] {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+
+[data-resize-handle][data-direction="top-right"] {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+
+[data-resize-handle][data-direction="bottom-left"] {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+
+[data-resize-handle][data-direction="bottom-right"] {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
+
+/* 이미지 정렬 - 저장된 HTML (포트폴리오 페이지) */
+img[data-align="center"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+img[data-align="right"] {
+  display: block;
+  margin-left: auto;
+}
+
+/* 이미지 정렬 - 에디터 (리사이즈 컨테이너) */
+[data-resize-container][data-align="center"] {
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[data-resize-container][data-align="right"] {
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+}
+
+/* 유튜브 정렬 */
+div[data-youtube-video]:has(iframe[data-align="center"]) {
+  display: flex;
+  justify-content: center;
+}
+
+div[data-youtube-video]:has(iframe[data-align="right"]) {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -2,14 +2,21 @@
 
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Fragment } from '@tiptap/pm/model';
+import { NodeSelection } from '@tiptap/pm/state';
 import Youtube from '@tiptap/extension-youtube';
-import { EditorContent, useEditor } from '@tiptap/react';
+import { type Editor, EditorContent, useEditor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useToast } from '@/components/ui/Toast';
+import { ALIGN, NODE_TYPE } from '@/constants/editor';
 import { uploadImage } from '@/lib/image';
 import { createClient } from '@/lib/supabase/client';
+
+const MAX_IMAGE_WIDTH = 1200;
+const MIN_RESIZE_SIZE = 100;
 
 interface TiptapEditorProps {
   content: string;
@@ -18,6 +25,75 @@ interface TiptapEditorProps {
 
 const YOUTUBE_URL_PATTERN =
   /^https?:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)/;
+
+const AlignableImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-align': {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute('data-align'),
+        renderHTML: (attrs: Record<string, unknown>) => {
+          if (!attrs['data-align']) return {};
+          return { 'data-align': attrs['data-align'] as string };
+        },
+      },
+    };
+  },
+  addNodeView() {
+    const parentRenderer = this.parent?.();
+    if (!parentRenderer) return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (props: any) => {
+      const view = parentRenderer(props);
+
+      const applyAlign = (align: string | null) => {
+        if (view.dom instanceof HTMLElement) {
+          if (align) view.dom.setAttribute('data-align', align);
+          else view.dom.removeAttribute('data-align');
+        }
+      };
+
+      applyAlign(props.node.attrs['data-align'] || null);
+
+      const origUpdate = view.update;
+      if (origUpdate) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        view.update = (node: any, decorations: any, innerDecorations: any) => {
+          const result = origUpdate.call(
+            view,
+            node,
+            decorations,
+            innerDecorations,
+          );
+          if (result !== false) {
+            applyAlign(node?.attrs?.['data-align'] || null);
+          }
+          return result;
+        };
+      }
+
+      return view;
+    };
+  },
+});
+
+const AlignableYoutube = Youtube.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-align': {
+        default: null,
+        parseHTML: (el: HTMLElement) => el.getAttribute('data-align'),
+        renderHTML: (attrs: Record<string, unknown>) => {
+          if (!attrs['data-align']) return {};
+          return { 'data-align': attrs['data-align'] as string };
+        },
+      },
+    };
+  },
+});
 
 function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   const { toast } = useToast();
@@ -42,8 +118,13 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       if (!file) return;
       try {
         const supabase = createClient();
-        const url = await uploadImage(supabase, file, 1200, 'posts');
-        editor.chain().focus().setImage({ src: url }).run();
+        const url = await uploadImage(supabase, file, MAX_IMAGE_WIDTH, 'posts');
+        editor
+          .chain()
+          .focus()
+          .setImage({ src: url })
+          .createParagraphNear()
+          .run();
       } catch {
         toast('이미지 업로드에 실패했습니다.');
       }
@@ -60,7 +141,12 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       return;
     }
 
-    editor.commands.setYoutubeVideo({ src: trimmed });
+    editor
+      .chain()
+      .focus()
+      .setYoutubeVideo({ src: trimmed })
+      .createParagraphNear()
+      .run();
     setYoutubeUrl('');
     setShowYoutubeInput(false);
   };
@@ -75,7 +161,7 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           }
           className={btnClass(editor.isActive('heading', { level: 2 }))}
         >
-          H2
+          제목2
         </button>
         <button
           type="button"
@@ -84,56 +170,58 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           }
           className={btnClass(editor.isActive('heading', { level: 3 }))}
         >
-          H3
+          제목3
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={btnClass(editor.isActive('bold'))}
         >
-          B
+          굵게
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={btnClass(editor.isActive('italic'))}
         >
-          I
+          기울임
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={btnClass(editor.isActive('bulletList'))}
+          aria-label="순서 없는 목록"
         >
-          UL
+          ● 목록
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={btnClass(editor.isActive('orderedList'))}
+          aria-label="순서 있는 목록"
         >
-          OL
+          1. 목록
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={btnClass(editor.isActive('blockquote'))}
         >
-          &ldquo;&rdquo;
+          인용
         </button>
         <button
           type="button"
           onClick={handleImageUpload}
           className={btnClass(false)}
         >
-          IMG
+          이미지
         </button>
         <button
           type="button"
           onClick={() => setShowYoutubeInput(!showYoutubeInput)}
           className={btnClass(showYoutubeInput)}
         >
-          YT
+          유튜브
         </button>
       </div>
       {showYoutubeInput && (
@@ -171,13 +259,174 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
   );
 }
 
+function moveNode(editor: Editor, direction: 'up' | 'down'): boolean {
+  const { state } = editor;
+  const { selection } = state;
+
+  if (!(selection instanceof NodeSelection)) return false;
+
+  const node = selection.node;
+  const pos = selection.from;
+  const $pos = state.doc.resolve(pos);
+  const index = $pos.index();
+  const parent = $pos.parent;
+
+  if (direction === 'up' && index === 0) return false;
+  if (direction === 'down' && index >= parent.childCount - 1) return false;
+
+  const tr = state.tr;
+
+  if (direction === 'up') {
+    const prevNode = parent.child(index - 1);
+    const prevStart = pos - prevNode.nodeSize;
+    tr.replaceWith(
+      prevStart,
+      pos + node.nodeSize,
+      Fragment.fromArray([node, prevNode]),
+    );
+    tr.setSelection(NodeSelection.create(tr.doc, prevStart));
+  } else {
+    const nextNode = parent.child(index + 1);
+    const nextEnd = pos + node.nodeSize + nextNode.nodeSize;
+    tr.replaceWith(pos, nextEnd, Fragment.fromArray([nextNode, node]));
+    tr.setSelection(NodeSelection.create(tr.doc, pos + nextNode.nodeSize));
+  }
+
+  editor.view.dispatch(tr);
+  return true;
+}
+
+function MediaBubbleMenu({ editor }: { editor: Editor }) {
+  const btnClass = (active: boolean) =>
+    `rounded px-2 py-1 text-sm transition-colors ${
+      active
+        ? 'bg-accent/20 text-accent'
+        : 'text-muted hover:text-foreground hover:bg-foreground/5'
+    }`;
+
+  const getActiveNodeType = useCallback((): string | null => {
+    if (editor.isActive(NODE_TYPE.IMAGE)) return NODE_TYPE.IMAGE;
+    if (editor.isActive(NODE_TYPE.YOUTUBE)) return NODE_TYPE.YOUTUBE;
+    return null;
+  }, [editor]);
+
+  const getCurrentAlign = useCallback((): string | null => {
+    const nodeType = getActiveNodeType();
+    if (!nodeType) return null;
+    return editor.getAttributes(nodeType)['data-align'] || null;
+  }, [editor, getActiveNodeType]);
+
+  const handleAlign = useCallback(
+    (align: string | null) => {
+      const nodeType = getActiveNodeType();
+      if (!nodeType) return;
+      editor.commands.updateAttributes(nodeType, { 'data-align': align });
+    },
+    [editor, getActiveNodeType],
+  );
+
+  const handleMoveUp = useCallback(() => {
+    moveNode(editor, 'up');
+  }, [editor]);
+
+  const handleMoveDown = useCallback(() => {
+    moveNode(editor, 'down');
+  }, [editor]);
+
+  const handleDelete = useCallback(() => {
+    editor.commands.deleteSelection();
+  }, [editor]);
+
+  const currentAlign = getCurrentAlign();
+
+  return (
+    <BubbleMenu
+      editor={editor}
+      shouldShow={({ editor: e }) =>
+        e.isActive(NODE_TYPE.IMAGE) || e.isActive(NODE_TYPE.YOUTUBE)
+      }
+    >
+      <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-lg">
+        <div role="group" aria-label="정렬" className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => handleAlign(null)}
+            className={btnClass(!currentAlign)}
+            title="왼쪽 정렬"
+            aria-label="왼쪽 정렬"
+            aria-pressed={!currentAlign}
+          >
+            좌
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAlign(ALIGN.CENTER)}
+            className={btnClass(currentAlign === ALIGN.CENTER)}
+            title="가운데 정렬"
+            aria-label="가운데 정렬"
+            aria-pressed={currentAlign === ALIGN.CENTER}
+          >
+            중
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAlign(ALIGN.RIGHT)}
+            className={btnClass(currentAlign === ALIGN.RIGHT)}
+            title="오른쪽 정렬"
+            aria-label="오른쪽 정렬"
+            aria-pressed={currentAlign === ALIGN.RIGHT}
+          >
+            우
+          </button>
+        </div>
+        <div className="mx-0.5 h-5 w-px bg-border" />
+        <button
+          type="button"
+          onClick={handleMoveUp}
+          className={btnClass(false)}
+          title="위로 이동"
+          aria-label="위로 이동"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          onClick={handleMoveDown}
+          className={btnClass(false)}
+          title="아래로 이동"
+          aria-label="아래로 이동"
+        >
+          ↓
+        </button>
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="rounded px-2 py-1 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
+          title="삭제"
+          aria-label="삭제"
+        >
+          ✕
+        </button>
+      </div>
+    </BubbleMenu>
+  );
+}
+
 export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Image,
-      Youtube.configure({ controls: false }),
+      AlignableImage.configure({
+        resize: {
+          enabled: true,
+          directions: ['bottom-right', 'bottom-left', 'top-right', 'top-left'],
+          minWidth: MIN_RESIZE_SIZE,
+          minHeight: MIN_RESIZE_SIZE,
+          alwaysPreserveAspectRatio: true,
+        },
+      }),
+      AlignableYoutube.configure({ controls: false }),
       Placeholder.configure({ placeholder: '내용을 입력하세요...' }),
     ],
     content,
@@ -185,7 +434,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     editorProps: {
       attributes: {
         class:
-          'min-h-[300px] p-4 focus:outline-none prose-invert max-w-none [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted [&_img]:rounded-lg [&_img]:my-4',
+          'min-h-[300px] p-4 focus:outline-none prose-invert max-w-none [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted [&_img]:rounded-lg [&_img]:my-4 [&_a]:text-accent [&_a]:underline [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-lg [&_iframe]:my-4',
       },
     },
   });
@@ -196,6 +445,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     <div className="rounded-lg border border-border bg-card">
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
+      <MediaBubbleMenu editor={editor} />
     </div>
   );
 }

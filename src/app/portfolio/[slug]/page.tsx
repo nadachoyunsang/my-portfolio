@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import Container from '@/components/ui/Container';
 import { OTHER_CATEGORY_LABEL } from '@/constants/category';
 import { getCategories } from '@/lib/categories';
 import { getPostBySlug } from '@/lib/posts';
@@ -59,7 +60,7 @@ export default async function BlogPostPage({
   });
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-16">
+    <Container as="article" className="py-16">
       <Link
         href="/#portfolio"
         className="text-sm text-muted hover:text-foreground transition-colors"
@@ -89,10 +90,10 @@ export default async function BlogPostPage({
 
       {post.content && (
         <div
-          className="prose-invert mt-12 max-w-none leading-relaxed [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:text-lg [&_h3]:font-semibold [&_p]:mb-4 [&_p]:text-foreground/85 [&_a]:text-accent [&_a]:underline [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-1 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted [&_img]:rounded-lg [&_img]:my-6 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-lg [&_iframe]:my-6"
+          className="prose-invert mt-12 max-w-none rounded-lg border border-transparent p-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted [&_img]:rounded-lg [&_img]:my-4 [&_a]:text-accent [&_a]:underline [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-lg [&_iframe]:my-4"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       )}
-    </article>
+    </Container>
   );
 }

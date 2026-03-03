@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import LogoutButton from '@/components/LogoutButton';
+import Container from '@/components/ui/Container';
 import { ToastProvider } from '@/components/ui/Toast';
 import { getAdminUser } from '@/lib/auth';
 
@@ -18,7 +19,7 @@ export default async function AdminLayout({
     <ToastProvider>
       <div className="min-h-screen bg-background">
         <header className="border-b border-neutral-800">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+          <Container className="flex items-center justify-between py-4">
             <Link
               href="/admin"
               className="text-lg font-semibold text-foreground hover:text-accent transition-colors"
@@ -29,9 +30,11 @@ export default async function AdminLayout({
               <span className="text-sm text-neutral-400">{user.email}</span>
               <LogoutButton />
             </div>
-          </div>
+          </Container>
         </header>
-        <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
+        <Container as="main" className="py-8">
+          {children}
+        </Container>
       </div>
     </ToastProvider>
   );
