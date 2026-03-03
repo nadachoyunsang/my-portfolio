@@ -28,7 +28,7 @@ export default async function AdminPostsPage() {
     id: post.id,
     title: post.title,
     category: post.category,
-    categoryLabel: categoryLabel[post.category] ?? post.category,
+    categoryLabel: categoryLabel[post.category] ?? '미할당',
     published: post.published,
     created_at: post.created_at,
   }));

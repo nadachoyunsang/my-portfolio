@@ -68,7 +68,7 @@ export default async function BlogPostPage({
 
       <header className="mt-8">
         <span className="text-sm text-accent">
-          {categoryLabel[post.category] ?? post.category}
+          {categoryLabel[post.category] ?? '기타'}
         </span>
         <h1 className="mt-2 text-3xl font-bold sm:text-4xl">{post.title}</h1>
         <p className="mt-3 text-sm text-muted">{date}</p>
