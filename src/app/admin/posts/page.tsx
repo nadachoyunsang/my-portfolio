@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import PostSortableList from '@/components/admin/PostSortableList';
+import { UNASSIGNED_CATEGORY_LABEL } from '@/constants/category';
 import { getCategories } from '@/lib/categories';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/database';
@@ -28,7 +29,7 @@ export default async function AdminPostsPage() {
     id: post.id,
     title: post.title,
     category: post.category,
-    categoryLabel: categoryLabel[post.category] ?? '미할당',
+    categoryLabel: categoryLabel[post.category] ?? UNASSIGNED_CATEGORY_LABEL,
     published: post.published,
     created_at: post.created_at,
   }));

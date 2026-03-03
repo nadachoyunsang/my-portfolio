@@ -4,6 +4,10 @@ import { useState } from 'react';
 
 import BlogCard, { type GridSize } from '@/components/BlogCard';
 import CategoryTabs from '@/components/CategoryTabs';
+import {
+  OTHER_CATEGORY_LABEL,
+  OTHER_CATEGORY_SLUG,
+} from '@/constants/category';
 import type { PostSummary } from '@/lib/posts';
 
 type ViewMode = 'grid' | 'list';
@@ -45,7 +49,10 @@ export default function BlogSection({
   );
   const tabCategories =
     orphanPosts.length > 0
-      ? [...categories, { slug: '__other__', name: '기타' }]
+      ? [
+          ...categories,
+          { slug: OTHER_CATEGORY_SLUG, name: OTHER_CATEGORY_LABEL },
+        ]
       : categories;
 
   const [category, setCategory] = useState<string | null>(
@@ -55,7 +62,7 @@ export default function BlogSection({
   const [gridSize, setGridSize] = useState<GridSize>(defaultGridSize);
 
   const filtered =
-    category === '__other__'
+    category === OTHER_CATEGORY_SLUG
       ? orphanPosts
       : category
         ? posts.filter((p) => p.category === category)
