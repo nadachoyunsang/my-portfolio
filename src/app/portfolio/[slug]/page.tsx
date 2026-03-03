@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -86,18 +85,6 @@ export default async function BlogPostPage({
           </div>
         )}
       </header>
-
-      {post.thumbnail_url && (
-        <div className="relative mt-8 aspect-video overflow-hidden rounded-lg">
-          <Image
-            src={post.thumbnail_url}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
 
       {post.content && (
         <div
