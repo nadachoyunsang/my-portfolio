@@ -60,7 +60,7 @@ export default async function BlogPostPage({
   });
 
   return (
-    <Container as="article" className="py-16">
+    <Container as="article" maxWidth="max-w-3xl" className="py-16">
       <Link
         href="/#portfolio"
         className="text-sm text-muted hover:text-foreground transition-colors"

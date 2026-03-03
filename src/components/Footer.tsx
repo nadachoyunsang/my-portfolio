@@ -8,7 +8,12 @@ interface FooterProps {
 export default function Footer({ email, siteName = 'YJ-CJS' }: FooterProps) {
   return (
     <section id="contact" className="border-t border-border">
-      <Container as="footer" role="contentinfo" className="py-16 text-center">
+      <Container
+        as="footer"
+        maxWidth="max-w-3xl"
+        role="contentinfo"
+        className="py-16 text-center"
+      >
         <h2 className="text-2xl font-bold">Contact</h2>
         <a
           href={`mailto:${email}`}
