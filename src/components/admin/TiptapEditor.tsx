@@ -14,6 +14,9 @@ import { useToast } from '@/components/ui/Toast';
 import { uploadImage } from '@/lib/image';
 import { createClient } from '@/lib/supabase/client';
 
+const MAX_IMAGE_WIDTH = 1200;
+const MIN_RESIZE_SIZE = 100;
+
 interface TiptapEditorProps {
   content: string;
   onChange: (html: string) => void;
@@ -114,7 +117,7 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
       if (!file) return;
       try {
         const supabase = createClient();
-        const url = await uploadImage(supabase, file, 1200, 'posts');
+        const url = await uploadImage(supabase, file, MAX_IMAGE_WIDTH, 'posts');
         editor
           .chain()
           .focus()
@@ -404,8 +407,8 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         resize: {
           enabled: true,
           directions: ['bottom-right', 'bottom-left', 'top-right', 'top-left'],
-          minWidth: 100,
-          minHeight: 100,
+          minWidth: MIN_RESIZE_SIZE,
+          minHeight: MIN_RESIZE_SIZE,
           alwaysPreserveAspectRatio: true,
         },
       }),
