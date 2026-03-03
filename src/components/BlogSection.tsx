@@ -4,6 +4,10 @@ import { useState } from 'react';
 
 import BlogCard, { type GridSize } from '@/components/BlogCard';
 import CategoryTabs from '@/components/CategoryTabs';
+import {
+  OTHER_CATEGORY_LABEL,
+  OTHER_CATEGORY_SLUG,
+} from '@/constants/category';
 import type { PostSummary } from '@/lib/posts';
 
 type ViewMode = 'grid' | 'list';
@@ -40,15 +44,29 @@ export default function BlogSection({
   categories,
   defaultGridSize = 'md',
 }: BlogSectionProps) {
+  const orphanPosts = posts.filter(
+    (p) => !categories.some((c) => c.slug === p.category),
+  );
+  const tabCategories =
+    orphanPosts.length > 0
+      ? [
+          ...categories,
+          { slug: OTHER_CATEGORY_SLUG, name: OTHER_CATEGORY_LABEL },
+        ]
+      : categories;
+
   const [category, setCategory] = useState<string | null>(
-    categories[0]?.slug ?? null,
+    tabCategories[0]?.slug ?? null,
   );
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [gridSize, setGridSize] = useState<GridSize>(defaultGridSize);
 
-  const filtered = category
-    ? posts.filter((p) => p.category === category)
-    : posts;
+  const filtered =
+    category === OTHER_CATEGORY_SLUG
+      ? orphanPosts
+      : category
+        ? posts.filter((p) => p.category === category)
+        : posts;
 
   return (
     <section id="portfolio" className="px-6 py-24">
@@ -131,10 +149,10 @@ export default function BlogSection({
             </div>
           </div>
         </div>
-        {categories.length > 0 && (
+        {tabCategories.length > 0 && (
           <div className="mt-6">
             <CategoryTabs
-              categories={categories}
+              categories={tabCategories}
               active={category}
               onChange={setCategory}
             />
