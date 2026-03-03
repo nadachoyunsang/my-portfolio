@@ -11,6 +11,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { useCallback, useState } from 'react';
 
 import { useToast } from '@/components/ui/Toast';
+import { ALIGN, NODE_TYPE } from '@/constants/editor';
 import { uploadImage } from '@/lib/image';
 import { createClient } from '@/lib/supabase/client';
 
@@ -303,9 +304,9 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
         : 'text-muted hover:text-foreground hover:bg-foreground/5'
     }`;
 
-  const getActiveNodeType = useCallback((): 'image' | 'youtube' | null => {
-    if (editor.isActive('image')) return 'image';
-    if (editor.isActive('youtube')) return 'youtube';
+  const getActiveNodeType = useCallback((): string | null => {
+    if (editor.isActive(NODE_TYPE.IMAGE)) return NODE_TYPE.IMAGE;
+    if (editor.isActive(NODE_TYPE.YOUTUBE)) return NODE_TYPE.YOUTUBE;
     return null;
   }, [editor]);
 
@@ -342,37 +343,42 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
     <BubbleMenu
       editor={editor}
       shouldShow={({ editor: e }) =>
-        e.isActive('image') || e.isActive('youtube')
+        e.isActive(NODE_TYPE.IMAGE) || e.isActive(NODE_TYPE.YOUTUBE)
       }
     >
       <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1 shadow-lg">
-        <button
-          type="button"
-          onClick={() => handleAlign(null)}
-          className={btnClass(!currentAlign)}
-          title="왼쪽 정렬"
-          aria-label="왼쪽 정렬"
-        >
-          좌
-        </button>
-        <button
-          type="button"
-          onClick={() => handleAlign('center')}
-          className={btnClass(currentAlign === 'center')}
-          title="가운데 정렬"
-          aria-label="가운데 정렬"
-        >
-          중
-        </button>
-        <button
-          type="button"
-          onClick={() => handleAlign('right')}
-          className={btnClass(currentAlign === 'right')}
-          title="오른쪽 정렬"
-          aria-label="오른쪽 정렬"
-        >
-          우
-        </button>
+        <div role="group" aria-label="정렬" className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => handleAlign(null)}
+            className={btnClass(!currentAlign)}
+            title="왼쪽 정렬"
+            aria-label="왼쪽 정렬"
+            aria-pressed={!currentAlign}
+          >
+            좌
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAlign(ALIGN.CENTER)}
+            className={btnClass(currentAlign === ALIGN.CENTER)}
+            title="가운데 정렬"
+            aria-label="가운데 정렬"
+            aria-pressed={currentAlign === ALIGN.CENTER}
+          >
+            중
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAlign(ALIGN.RIGHT)}
+            className={btnClass(currentAlign === ALIGN.RIGHT)}
+            title="오른쪽 정렬"
+            aria-label="오른쪽 정렬"
+            aria-pressed={currentAlign === ALIGN.RIGHT}
+          >
+            우
+          </button>
+        </div>
         <div className="mx-0.5 h-5 w-px bg-border" />
         <button
           type="button"
