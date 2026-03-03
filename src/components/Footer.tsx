@@ -1,3 +1,5 @@
+import Container from '@/components/ui/Container';
+
 interface FooterProps {
   email: string;
   siteName?: string;
@@ -6,10 +8,7 @@ interface FooterProps {
 export default function Footer({ email, siteName = 'YJ-CJS' }: FooterProps) {
   return (
     <section id="contact" className="border-t border-border">
-      <footer
-        role="contentinfo"
-        className="mx-auto max-w-3xl px-6 py-16 text-center"
-      >
+      <Container as="footer" role="contentinfo" className="py-16 text-center">
         <h2 className="text-2xl font-bold">Contact</h2>
         <a
           href={`mailto:${email}`}
@@ -21,7 +20,7 @@ export default function Footer({ email, siteName = 'YJ-CJS' }: FooterProps) {
         <p className="mt-8 text-sm text-muted">
           &copy; {new Date().getFullYear()} {siteName}. All rights reserved.
         </p>
-      </footer>
+      </Container>
     </section>
   );
 }

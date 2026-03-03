@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import Container from '@/components/ui/Container';
 import { OTHER_CATEGORY_LABEL } from '@/constants/category';
 import { getCategories } from '@/lib/categories';
 import { getPostBySlug } from '@/lib/posts';
@@ -59,7 +60,7 @@ export default async function BlogPostPage({
   });
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-16">
+    <Container as="article" className="py-16">
       <Link
         href="/#portfolio"
         className="text-sm text-muted hover:text-foreground transition-colors"
@@ -93,6 +94,6 @@ export default async function BlogPostPage({
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       )}
-    </article>
+    </Container>
   );
 }
