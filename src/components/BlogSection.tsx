@@ -40,15 +40,26 @@ export default function BlogSection({
   categories,
   defaultGridSize = 'md',
 }: BlogSectionProps) {
+  const orphanPosts = posts.filter(
+    (p) => !categories.some((c) => c.slug === p.category),
+  );
+  const tabCategories =
+    orphanPosts.length > 0
+      ? [...categories, { slug: '__other__', name: '기타' }]
+      : categories;
+
   const [category, setCategory] = useState<string | null>(
-    categories[0]?.slug ?? null,
+    tabCategories[0]?.slug ?? null,
   );
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [gridSize, setGridSize] = useState<GridSize>(defaultGridSize);
 
-  const filtered = category
-    ? posts.filter((p) => p.category === category)
-    : posts;
+  const filtered =
+    category === '__other__'
+      ? orphanPosts
+      : category
+        ? posts.filter((p) => p.category === category)
+        : posts;
 
   return (
     <section id="portfolio" className="px-6 py-24">
@@ -131,10 +142,10 @@ export default function BlogSection({
             </div>
           </div>
         </div>
-        {categories.length > 0 && (
+        {tabCategories.length > 0 && (
           <div className="mt-6">
             <CategoryTabs
-              categories={categories}
+              categories={tabCategories}
               active={category}
               onChange={setCategory}
             />
