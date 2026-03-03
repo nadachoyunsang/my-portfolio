@@ -131,13 +131,15 @@ export default function BlogSection({
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <CategoryTabs
-            categories={categories}
-            active={category}
-            onChange={setCategory}
-          />
-        </div>
+        {categories.length > 0 && (
+          <div className="mt-6">
+            <CategoryTabs
+              categories={categories}
+              active={category}
+              onChange={setCategory}
+            />
+          </div>
+        )}
         {filtered.length > 0 ? (
           <div
             className={
