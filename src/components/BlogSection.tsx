@@ -40,7 +40,9 @@ export default function BlogSection({
   categories,
   defaultGridSize = 'md',
 }: BlogSectionProps) {
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(
+    categories[0]?.slug ?? null,
+  );
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [gridSize, setGridSize] = useState<GridSize>(defaultGridSize);
 
