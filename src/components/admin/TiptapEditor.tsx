@@ -189,6 +189,7 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={btnClass(editor.isActive('bulletList'))}
+          aria-label="순서 없는 목록"
         >
           ● 목록
         </button>
@@ -196,6 +197,7 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={btnClass(editor.isActive('orderedList'))}
+          aria-label="순서 있는 목록"
         >
           1. 목록
         </button>
@@ -349,6 +351,7 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
           onClick={() => handleAlign(null)}
           className={btnClass(!currentAlign)}
           title="왼쪽 정렬"
+          aria-label="왼쪽 정렬"
         >
           좌
         </button>
@@ -357,6 +360,7 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
           onClick={() => handleAlign('center')}
           className={btnClass(currentAlign === 'center')}
           title="가운데 정렬"
+          aria-label="가운데 정렬"
         >
           중
         </button>
@@ -365,6 +369,7 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
           onClick={() => handleAlign('right')}
           className={btnClass(currentAlign === 'right')}
           title="오른쪽 정렬"
+          aria-label="오른쪽 정렬"
         >
           우
         </button>
@@ -374,6 +379,7 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
           onClick={handleMoveUp}
           className={btnClass(false)}
           title="위로 이동"
+          aria-label="위로 이동"
         >
           ↑
         </button>
@@ -382,6 +388,7 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
           onClick={handleMoveDown}
           className={btnClass(false)}
           title="아래로 이동"
+          aria-label="아래로 이동"
         >
           ↓
         </button>
@@ -390,6 +397,7 @@ function MediaBubbleMenu({ editor }: { editor: Editor }) {
           onClick={handleDelete}
           className="rounded px-2 py-1 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 transition-colors"
           title="삭제"
+          aria-label="삭제"
         >
           ✕
         </button>
