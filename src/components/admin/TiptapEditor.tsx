@@ -176,7 +176,15 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Image,
+      Image.configure({
+        resize: {
+          enabled: true,
+          directions: ['bottom-right', 'bottom-left', 'top-right', 'top-left'],
+          minWidth: 100,
+          minHeight: 100,
+          alwaysPreserveAspectRatio: true,
+        },
+      }),
       Youtube.configure({ controls: false }),
       Placeholder.configure({ placeholder: '내용을 입력하세요...' }),
     ],
