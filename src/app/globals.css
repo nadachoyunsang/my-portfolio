@@ -87,3 +87,35 @@ body {
   right: -5px;
   cursor: nwse-resize;
 }
+
+/* 이미지 정렬 - 저장된 HTML (포트폴리오 페이지) */
+img[data-align="center"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+img[data-align="right"] {
+  display: block;
+  margin-left: auto;
+}
+
+/* 이미지 정렬 - 에디터 (리사이즈 컨테이너가 display:flex) */
+[data-resize-container][data-align="center"] {
+  justify-content: center;
+}
+
+[data-resize-container][data-align="right"] {
+  justify-content: flex-end;
+}
+
+/* 유튜브 정렬 */
+div[data-youtube-video]:has(iframe[data-align="center"]) {
+  display: flex;
+  justify-content: center;
+}
+
+div[data-youtube-video]:has(iframe[data-align="right"]) {
+  display: flex;
+  justify-content: flex-end;
+}
