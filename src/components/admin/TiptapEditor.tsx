@@ -157,7 +157,7 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           }
           className={btnClass(editor.isActive('heading', { level: 2 }))}
         >
-          H2
+          제목2
         </button>
         <button
           type="button"
@@ -166,56 +166,56 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> }) {
           }
           className={btnClass(editor.isActive('heading', { level: 3 }))}
         >
-          H3
+          제목3
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={btnClass(editor.isActive('bold'))}
         >
-          B
+          굵게
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={btnClass(editor.isActive('italic'))}
         >
-          I
+          기울임
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={btnClass(editor.isActive('bulletList'))}
         >
-          UL
+          ● 목록
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={btnClass(editor.isActive('orderedList'))}
         >
-          OL
+          1. 목록
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           className={btnClass(editor.isActive('blockquote'))}
         >
-          &ldquo;&rdquo;
+          인용
         </button>
         <button
           type="button"
           onClick={handleImageUpload}
           className={btnClass(false)}
         >
-          IMG
+          이미지
         </button>
         <button
           type="button"
           onClick={() => setShowYoutubeInput(!showYoutubeInput)}
           className={btnClass(showYoutubeInput)}
         >
-          YT
+          유튜브
         </button>
       </div>
       {showYoutubeInput && (
