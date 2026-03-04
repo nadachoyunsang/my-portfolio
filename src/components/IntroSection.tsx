@@ -1,3 +1,4 @@
+import IntroBackground from '@/components/IntroBackground';
 import type { Award } from '@/types/award';
 
 interface IntroSectionProps {
@@ -5,6 +6,7 @@ interface IntroSectionProps {
   job: string;
   bio: string;
   awards: Award[];
+  backgroundVideoUrl?: string | null;
 }
 
 export default function IntroSection({
@@ -12,13 +14,26 @@ export default function IntroSection({
   job,
   bio,
   awards,
+  backgroundVideoUrl,
 }: IntroSectionProps) {
   return (
     <section
       id="about"
-      className="flex min-h-[80vh] flex-col items-center justify-center px-6 py-24"
+      className={`relative flex flex-col items-center justify-center px-6 py-24 ${
+        backgroundVideoUrl ? 'h-screen overflow-hidden' : 'min-h-[80vh]'
+      }`}
     >
-      <div className="max-w-2xl text-center">
+      {backgroundVideoUrl && (
+        <>
+          <IntroBackground url={backgroundVideoUrl} />
+          <div className="absolute inset-0 bg-black/50" />
+        </>
+      )}
+      <div
+        className={`relative z-10 max-w-2xl text-center ${
+          backgroundVideoUrl ? '[text-shadow:0_2px_8px_rgba(0,0,0,0.5)]' : ''
+        }`}
+      >
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           {name}
         </h1>
