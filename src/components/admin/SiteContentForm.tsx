@@ -72,8 +72,8 @@ export default function SiteContentForm({
       return;
     }
 
-    router.refresh();
     toast('저장되었습니다.', 'success');
+    router.push('/admin');
   };
 
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
