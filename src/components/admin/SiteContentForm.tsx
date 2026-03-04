@@ -96,6 +96,7 @@ export default function SiteContentForm({
   };
 
   const handleVideoDelete = async () => {
+    if (!confirm('배경 영상을 삭제하시겠습니까?')) return;
     try {
       const supabase = createClient();
       await deleteIntroVideo(supabase);
@@ -167,7 +168,8 @@ export default function SiteContentForm({
               <button
                 type="button"
                 onClick={handleVideoDelete}
-                className="text-sm text-red-400 transition-colors hover:text-red-300"
+                disabled={videoUploading}
+                className="text-sm text-red-400 transition-colors hover:text-red-300 disabled:opacity-50"
               >
                 삭제
               </button>
