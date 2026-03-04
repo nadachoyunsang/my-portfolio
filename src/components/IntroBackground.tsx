@@ -11,15 +11,16 @@ export default function IntroBackground({ url }: IntroBackgroundProps) {
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mq.matches) {
-      videoRef.current?.pause();
+
+    if (!mq.matches) {
+      videoRef.current?.play().catch(() => {});
     }
 
     const handleChange = (e: MediaQueryListEvent) => {
       if (e.matches) {
         videoRef.current?.pause();
       } else {
-        videoRef.current?.play();
+        videoRef.current?.play().catch(() => {});
       }
     };
 
@@ -30,10 +31,10 @@ export default function IntroBackground({ url }: IntroBackgroundProps) {
   return (
     <video
       ref={videoRef}
-      autoPlay
       muted
       loop
       playsInline
+      aria-hidden="true"
       className="absolute inset-0 h-full w-full object-cover"
     >
       <source src={url} type="video/mp4" />
