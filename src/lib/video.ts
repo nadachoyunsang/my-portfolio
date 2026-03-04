@@ -33,7 +33,7 @@ export async function uploadIntroVideo(
     data: { publicUrl },
   } = supabase.storage.from(BUCKET).getPublicUrl(INTRO_PATH);
 
-  return publicUrl;
+  return `${publicUrl}?t=${Date.now()}`;
 }
 
 export async function deleteIntroVideo(
