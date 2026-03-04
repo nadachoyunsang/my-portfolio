@@ -69,7 +69,7 @@ feature/2-db-schema-design
 
 ## 이슈 및 PR 관리
 
-- 이슈: GitHub Issues (creating-github-issues 스킬)
+- 이슈: GitHub Issues (creating-github-issues 스킬), 담당자(assignee): `dev-msj`
 - PR: GitHub Pull Requests (creating-pull-requests 스킬)
 - feature → develop PR: `Closes #이슈번호` 포함, 이슈 자동 close는 develop → main 머지 시 발생
 - develop → main PR: 배포 시점에 생성
