@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
 import { createClient } from '@/lib/supabase/client';
-import { uploadIntroVideo, deleteIntroVideo } from '@/lib/video';
+import { uploadIntroVideo, deleteIntroVideo, VIDEO_ACCEPT } from '@/lib/video';
 
 interface SiteContentFormProps {
   content: Record<string, string>;
@@ -90,9 +90,10 @@ export default function SiteContentForm({
       toast('영상이 업로드되었습니다.', 'success');
     } catch (err) {
       toast(err instanceof Error ? err.message : '영상 업로드에 실패했습니다.');
+    } finally {
+      setVideoUploading(false);
+      e.target.value = '';
     }
-    setVideoUploading(false);
-    e.target.value = '';
   };
 
   const handleVideoDelete = async () => {
@@ -159,7 +160,7 @@ export default function SiteContentForm({
                 {videoUploading ? '업로드 중...' : '변경'}
                 <input
                   type="file"
-                  accept="video/mp4"
+                  accept={VIDEO_ACCEPT}
                   onChange={handleVideoUpload}
                   disabled={videoUploading}
                   className="hidden"
@@ -182,7 +183,7 @@ export default function SiteContentForm({
             ) : (
               <input
                 type="file"
-                accept="video/mp4"
+                accept={VIDEO_ACCEPT}
                 onChange={handleVideoUpload}
                 className="text-sm text-muted"
               />
