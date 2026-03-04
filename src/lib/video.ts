@@ -2,7 +2,8 @@ const BUCKET = 'videos';
 const INTRO_PATH = 'intro-background';
 const MAX_SIZE_MB = 50;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
-const ALLOWED_TYPES = ['video/mp4'];
+export const ALLOWED_TYPES = ['video/mp4'];
+export const VIDEO_ACCEPT = ALLOWED_TYPES.join(',');
 
 type SupabaseClient = ReturnType<
   typeof import('@/lib/supabase/client').createClient
@@ -60,5 +61,5 @@ export async function getIntroVideoUrl(
     data: { publicUrl },
   } = supabase.storage.from(BUCKET).getPublicUrl(INTRO_PATH);
 
-  return publicUrl;
+  return `${publicUrl}?t=${Date.now()}`;
 }
