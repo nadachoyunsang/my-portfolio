@@ -1,7 +1,8 @@
 -- videos Storage 버킷 생성 및 RLS 정책
 
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('videos', 'videos', true);
+VALUES ('videos', 'videos', true)
+ON CONFLICT (id) DO NOTHING;
 
 CREATE POLICY "videos_select_all"
   ON storage.objects FOR SELECT
