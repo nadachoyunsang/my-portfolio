@@ -30,13 +30,20 @@ export default async function AdminPostsPage() {
     title: post.title,
     category: post.category,
     categoryLabel: categoryLabel[post.category] ?? UNASSIGNED_CATEGORY_LABEL,
+    categoryAssigned: post.category in categoryLabel,
     published: post.published,
     created_at: post.created_at,
   }));
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <Link
+        href="/admin"
+        className="text-sm text-muted transition-colors hover:text-foreground"
+      >
+        ← 관리자 홈
+      </Link>
+      <div className="mt-2 flex items-center justify-between">
         <h2 className="text-2xl font-bold">글 관리</h2>
         <Link
           href="/admin/posts/new"
