@@ -18,7 +18,9 @@ export default function IntroSection({
   return (
     <section
       id="about"
-      className="relative flex h-screen flex-col items-center justify-center overflow-hidden px-6 py-24"
+      className={`relative flex flex-col items-center justify-center px-6 py-24 ${
+        backgroundVideoUrl ? 'h-screen overflow-hidden' : 'min-h-[80vh]'
+      }`}
     >
       {backgroundVideoUrl && (
         <>
@@ -35,12 +37,9 @@ export default function IntroSection({
         </>
       )}
       <div
-        className="relative z-10 max-w-2xl text-center"
-        style={
-          backgroundVideoUrl
-            ? { textShadow: '0 2px 8px rgba(0,0,0,0.5)' }
-            : undefined
-        }
+        className={`relative z-10 max-w-2xl text-center ${
+          backgroundVideoUrl ? '[text-shadow:0_2px_8px_rgba(0,0,0,0.5)]' : ''
+        }`}
       >
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           {name}
