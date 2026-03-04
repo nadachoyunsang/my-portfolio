@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import SiteContentForm from '@/components/admin/SiteContentForm';
 import { getSiteContent } from '@/lib/siteContent';
 import { createClient } from '@/lib/supabase/server';
@@ -12,7 +14,13 @@ export default async function AdminSitePage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold">사이트 콘텐츠 관리</h2>
+      <Link
+        href="/admin"
+        className="text-sm text-muted transition-colors hover:text-foreground"
+      >
+        ← 관리자 홈
+      </Link>
+      <h2 className="mt-2 text-2xl font-bold">사이트 콘텐츠 관리</h2>
       <p className="mt-2 text-sm text-muted">
         홈 화면에 표시되는 자기소개 및 연락처 정보를 수정합니다.
       </p>

@@ -19,8 +19,8 @@ export default function IntroSection({
   return (
     <section
       id="about"
-      className={`relative flex flex-col items-center justify-center px-6 py-24 ${
-        backgroundVideoUrl ? 'h-screen overflow-hidden' : 'min-h-[80vh]'
+      className={`relative flex h-screen flex-col items-center justify-center px-6 py-24 ${
+        backgroundVideoUrl ? 'overflow-hidden' : ''
       }`}
     >
       {backgroundVideoUrl && (
