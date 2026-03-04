@@ -27,6 +27,7 @@ interface PostItem {
   title: string;
   category: string;
   categoryLabel: string;
+  categoryAssigned: boolean;
   published: boolean;
   created_at: string;
 }
@@ -82,7 +83,11 @@ function SortablePost({ post }: { post: PostItem }) {
       >
         <div>
           <span className="font-medium">{post.title}</span>
-          <span className="ml-3 text-xs text-muted">{post.categoryLabel}</span>
+          <span
+            className={`ml-3 text-xs ${post.categoryAssigned ? 'text-blue-400' : 'text-red-400'}`}
+          >
+            {post.categoryLabel}
+          </span>
         </div>
         <div className="flex items-center gap-3">
           <span
@@ -160,6 +165,7 @@ export default function PostSortableList({
       {saving && <p className="mb-2 text-xs text-muted">순서 저장 중...</p>}
       {posts.length > 0 ? (
         <DndContext
+          id="post-sortable"
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}

@@ -35,9 +35,11 @@ export default function PostForm({ post, categories }: PostFormProps) {
   const [slug, setSlug] = useState(post?.slug ?? '');
   const [content, setContent] = useState(post?.content ?? '');
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? '');
-  const [category, setCategory] = useState<Category>(
-    post?.category ?? categories[0]?.slug ?? '',
-  );
+  const [category, setCategory] = useState<Category>(() => {
+    const current = post?.category ?? '';
+    if (current && categories.some((c) => c.slug === current)) return current;
+    return categories[0]?.slug ?? '';
+  });
   const [tagsInput, setTagsInput] = useState(post?.tags.join(', ') ?? '');
   const [thumbnailUrl, setThumbnailUrl] = useState(post?.thumbnail_url ?? '');
   const [published, setPublished] = useState(post?.published ?? false);

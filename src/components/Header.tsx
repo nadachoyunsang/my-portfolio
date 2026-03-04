@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import Container from '@/components/ui/Container';
+
 const NAV_ITEMS = [
   { label: '소개', href: '#about' },
   { label: '포트폴리오', href: '#portfolio' },
@@ -61,7 +63,7 @@ export default function Header({ siteName = 'YJ-CJS' }: HeaderProps) {
           : 'bg-transparent'
       }`}
     >
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
+      <Container className="flex items-center justify-between py-4">
         <a href="#" className="text-lg font-bold text-foreground">
           {siteName}
         </a>
@@ -106,7 +108,7 @@ export default function Header({ siteName = 'YJ-CJS' }: HeaderProps) {
             )}
           </svg>
         </button>
-      </div>
+      </Container>
 
       {/* 모바일 메뉴 */}
       {menuOpen && (

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import AwardManagement from '@/components/admin/AwardManagement';
 import { getAwards } from '@/lib/awards';
 
@@ -6,7 +8,13 @@ export default async function AdminAwardsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold">수상 내역 관리</h2>
+      <Link
+        href="/admin"
+        className="text-sm text-muted transition-colors hover:text-foreground"
+      >
+        ← 관리자 홈
+      </Link>
+      <h2 className="mt-2 text-2xl font-bold">수상 내역 관리</h2>
       <p className="mt-2 text-sm text-muted">
         프로필에 표시되는 수상 내역을 추가, 수정, 삭제할 수 있습니다.
       </p>
