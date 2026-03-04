@@ -1,3 +1,4 @@
+import IntroBackground from '@/components/IntroBackground';
 import type { Award } from '@/types/award';
 
 interface IntroSectionProps {
@@ -24,15 +25,7 @@ export default function IntroSection({
     >
       {backgroundVideoUrl && (
         <>
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 h-full w-full object-cover"
-          >
-            <source src={backgroundVideoUrl} type="video/mp4" />
-          </video>
+          <IntroBackground url={backgroundVideoUrl} />
           <div className="absolute inset-0 bg-black/50" />
         </>
       )}
