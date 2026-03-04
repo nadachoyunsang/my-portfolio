@@ -6,14 +6,20 @@ import { getAwards } from '@/lib/awards';
 import { getCategories } from '@/lib/categories';
 import { getPublishedPosts } from '@/lib/posts';
 import { getSiteContent } from '@/lib/siteContent';
+import { createClient } from '@/lib/supabase/server';
+import { getIntroVideoUrl } from '@/lib/video';
 
 export default async function Home() {
-  const [content, posts, categories, awards] = await Promise.all([
-    getSiteContent(),
-    getPublishedPosts(),
-    getCategories(),
-    getAwards(),
-  ]);
+  const supabase = await createClient();
+  const [content, posts, categories, awards, introVideoUrl] = await Promise.all(
+    [
+      getSiteContent(),
+      getPublishedPosts(),
+      getCategories(),
+      getAwards(),
+      getIntroVideoUrl(supabase),
+    ],
+  );
 
   return (
     <>
@@ -27,6 +33,7 @@ export default async function Home() {
             '안녕하세요. 다큐멘터리, 책, 기사를 소개합니다.'
           }
           awards={awards}
+          backgroundVideoUrl={introVideoUrl}
         />
         <BlogSection
           posts={posts}
